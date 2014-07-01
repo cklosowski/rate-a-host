@@ -263,14 +263,13 @@ function rah_send_host_approval_email( $new_status, $old_status, $post ) {
 		$user_info = get_userdata( $user_id );
 
 		$message  = 'Hi ' . $user_info->first_name . ',' . "\n";
-		$message .= 'Thanks for requesting to be a host on the Host Reviews Board.' . "\n\n";
 		$message .= 'We\'ve looked over your application and have approved your account. Your members can start reviewing you at:' . "\n";
-		$message .= get_permalink( $post->ID ) . '/new/';
+		$message .= get_permalink( $post->ID ) . 'new/';
 		$message .= "\n\n";
 		$message .= 'Thanks,' . "\n";
 		$message .= 'The Host Reviews Board Team';
 
-		wp_mail( $user_info->user_email, 'Host Reviews Board: Host Account Approved', $message );
+		wp_mail( $user_info->user_email, 'Host Account Approved', $message );
 	}
 }
 
@@ -323,3 +322,10 @@ function custom_columns( $column, $post_id ) {
 		echo '<a href="' . $fb_link . '" target="_blank">View Group on Facebook</a>';
 	}
 }
+
+function rah_filter_wp_mail_from_name( $from_name ) {
+	return 'Host Reviews Board';
+}
+add_filter( 'wp_mail_from_name', 'rah_filter_wp_mail_from_name' );
+
+
