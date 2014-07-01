@@ -254,13 +254,21 @@ function rah_recalculate_host_ratings( $new_status, $old_status, $post ) {
 }
 
 function rah_send_host_approval_email( $new_status, $old_status, $post ) {
+	if ( $post->post_type !== 'hosts' ) {
+		return;
+	}
+
 	if ( $new_status == 'publish' && $old_status != 'publish' ) {
 		$user_id = get_user_id_from_host_id( $post->ID );
 		$user_info = get_userdata( $user_id );
 
-		$message  = 'Thanks for requesting to be a host on the Host Reviews Board.' . "\n\n";
-		$message .= 'We\'ve looked over your application and have approved your account! You can start sending your members to the following URL to review you:' . "\n";
-		$message .= get_permalink( $post->ID );
+		$message  = 'Hi ' . $user_info->first_name . ',' . "\n";
+		$message .= 'Thanks for requesting to be a host on the Host Reviews Board.' . "\n\n";
+		$message .= 'We\'ve looked over your application and have approved your account. Your members can start reviewing you at:' . "\n";
+		$message .= get_permalink( $post->ID ) . '/new/';
+		$message .= "\n\n";
+		$message .= 'Thanks,' . "\n";
+		$message .= 'The Host Reviews Board Team';
 
 		wp_mail( $user_info->user_email, 'Host Reviews Board: Host Account Approved', $message );
 	}
