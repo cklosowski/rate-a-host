@@ -132,3 +132,41 @@ function rah_delete_host( $post_id ) {
 
 	delete_user_meta( $results[0]->user_id, '_user_host_id' );
 }
+
+
+function rah_register_meta_boxes() {
+	global $post, $ppp_options;
+
+	if ( $post->post_type !== 'reviews' ) {
+		return;
+	}
+
+	add_meta_box( 'rah_review_metabox', 'Rating Information', 'rah_review_metabox_callback', 'reviews', 'normal', 'high' );
+}
+add_action( 'add_meta_boxes', 'rah_register_meta_boxes', 12 );
+
+/**
+ * Display the Metabox for Post Promoter Pro
+ * @return void
+ */
+function rah_review_metabox_callback() {
+	global $post;
+	$star_ratings = get_post_meta( $post->ID, '_review_star_ratings', true );
+	$xpost = get_post_meta( $post->ID, '_review_xpost', true );
+	$reinvoices = get_post_meta( $post->ID, '_review_reinvoices', true );
+	?>
+	<p>For Cross Post:&nbsp;<?php echo $xpost; ?></p>
+	<p>Re-invoices:&nbsp;<?php echo $reinvoices; ?></p>
+
+	<?php
+	foreach ( $star_ratings as $key => $rating ) {
+		?><div class="rating-loop-wrapper"><?php
+		$rating_title = ucwords( str_replace( array( '_', 'rating', 'and' ), array( ' ', '', '&' ), $key ) );
+		?>
+		<div class="review-shortname"><?php echo trim( $rating_title ); ?>:</div>
+		<div class="review-stars"><?php echo rah_generate_stars( $rating ); ?></div>
+		</div><?php
+  	}
+}
+
+
