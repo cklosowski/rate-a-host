@@ -104,7 +104,7 @@ function host_review_form( $atts ) {
 				</p>
 
 				<p>
-					<strong><label for="reinvoices">This host re-invoices within 45 days if requrested</label></strong><br />
+					<strong><label for="reinvoices">This host re-invoices within 45 days if requested</label></strong><br />
 					<input type="radio" name="reinvoices" value="yes" />&nbsp;Yes<br />
 					<input type="radio" name="reinvoices" value="no" />&nbsp;No<br />
 					<input type="radio" name="reinvoices" value="na" />&nbsp;Not Applicable
@@ -209,7 +209,7 @@ function host_review_edit_form( $atts ) {
 				</p>
 
 				<p>
-					<strong><label for="reinvoices">This host re-invoices within 45 days if requrested</label></strong><br />
+					<strong><label for="reinvoices">This host re-invoices within 45 days if requested</label></strong><br />
 					<input type="radio" name="reinvoices" value="yes" <?php checked( 'yes', $reinvoices, true ); ?> />&nbsp;Yes<br />
 					<input type="radio" name="reinvoices" value="no" <?php checked( 'no', $reinvoices, true ); ?> />&nbsp;No<br />
 					<input type="radio" name="reinvoices" value="na" <?php checked( 'na', $reinvoices, true ); ?> />&nbsp;Not Applicable
