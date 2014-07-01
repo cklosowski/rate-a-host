@@ -31,13 +31,17 @@
 		var formId = $(this).attr( 'id' );
 
 		if ( formId == 'new_host' ) {
+			var errors = 0;
 			var isSecret = $('#is_secret').prop('checked');
 			var group_id = $('input[name=group_id]:checked').val();
 			if ( isSecret === false && typeof group_id === 'undefined' ) {
 				$('#group_input').before('<p class="alerts error">Group URL is Required if your group is not secret.</p>');
+				errors = errors + 1;
 			}
 
-			return false;
+			if ( errors > 0 ) {
+				return false;
+			}
 
 		} else if ( formId == 'review_host' || formId == 'edit_review' ) {
 			var title = $('#title').val().trim();

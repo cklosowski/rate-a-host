@@ -253,6 +253,19 @@ function rah_recalculate_host_ratings( $new_status, $old_status, $post ) {
     }
 }
 
+function rah_send_host_approval_email( $new_status, $old_status, $post ) {
+	if ( $new_status == 'publish' && $old_status != 'publish' ) {
+		$user_id = get_user_id_from_host_id( $post->ID );
+		$user_info = get_userdata( $user_id );
+
+		$message  = 'Thanks for requesting to be a host on the Host Reviews Board.' . "\n\n";
+		$message .= 'We\'ve looked over your application and have approved your account! You can start sending your members to the following URL to review you:' . "\n";
+		$message .= get_permalink( $post->ID );
+
+		wp_mail( $user_info->user_email, 'Host Reviews Board: Host Account Approved', $message );
+	}
+}
+
 function rah_check_rate_limit() {
 	$user_ip = $_SERVER['REMOTE_ADDR'];
 	$ip_hash = md5( $user_ip );
