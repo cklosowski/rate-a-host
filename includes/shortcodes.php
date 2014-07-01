@@ -89,12 +89,12 @@ function host_review_form( $atts ) {
 		<div id="postbox" class="rah-form">
 
 			<form id="review_host" name="new_post" method="post" action="<?php echo get_permalink( $post->ID); ?>submit">
-				<h5><label for="name">Reviewing</label></h5>
+				<h3>Reviewing</h3>
 				<p>
 					<input size="50" id="name" name="host_name" readonly type="text" value="<?php the_title(); ?>" />
 				</p>
 
-				<h5><label for="title">Review Summary</label></h5>
+				<h3>Review Summary</h3>
 				<p>
 					<input size="50" id="title" name="title" type="text" value="" />
 				</p>
@@ -103,45 +103,51 @@ function host_review_form( $atts ) {
 					<strong><label for="xpost">This rating is for a cross-post</label></strong>&nbsp;<input id="xpost" type="checkbox" name="xpost" value="yes" />
 				</p>
 
-				<h5><label for="buys">Buys</label></h5>
 				<p>
-					<input type="number" name="buys_rating" id="buys" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" />
-					<p>
-					Do they ask the group to gauge interest? Do they open the buys when stated? Are the buy documents clear and easy to understand? Do they provide good pictures of the items for sale?
-					Anything that relates to the buy process, before it closes.
-					</p>
+					<strong><label for="reinvoices">This host re-invoices within 45 days if requrested</label></strong><br />
+					<input type="radio" name="reinvoices" value="yes" />&nbsp;Yes<br />
+					<input type="radio" name="reinvoices" value="no" />&nbsp;No<br />
+					<input type="radio" name="reinvoices" value="na" />&nbsp;Not Applicable
 				</p>
 
-				<h5><label for="post-buy">Post-Buy</label></h5>
+				<h3>Efficiency</h3>
 				<p>
-					<input type="number" name="post_buy_rating" id="post-buy" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" />
-					<p>
-					Do they update the group about vendor-to-host shipping status? Do they post when a shipment has arrived? Are invoices promptly delivered. How long does it take to sort and ship?
-					Are items shipped within the host's alloted timeframe?
-					</p>
+					<input type="number" name="star_ratings[invoicing_and_ordering_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" value="" />
+					<label for="">Did the host invoice and pay for your buy in a timeframe you felt was appropriate?</label>
+				</p>
+				<p>
+					<input type="number" name="star_ratings[sorting_and_packing_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" />
+					<label for="post_order">Did the host sort, pack, and invoice for shipping in an appropriate amount of time after the <strong><em>entire</em></strong> order was received?</label>
+				</p>
+				<p>
+					<input type="number" name="star_ratings[shipping_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" />
+					<label for="shipping">Was the order mailed, after shipping was paid, in a timeframe that was appropriate?</label>
 				</p>
 
-				<h5><label for="issues">Issue Resolution</label></h5>
+				<h3>Communication/Resolution</h3>
 				<p>
-					<input type="number" name="issues_rating" id="issues" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" />
-					<p>
-					How does the host react to seller/vendor issues? Do they promptly state when there are issues? Are they clear or transparent about the issues that to arrise? Do they resolve them in a
-					reasonablie amount of time.
-					</p>
+					<input type="number" name="star_ratings[communication_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" />
+					<label for="communication">How well did the host communicate updates and information about the buys from open until shipment to you?</label>
+				</p>
+				<p>
+					<input type="number" name="star_ratings[professionalism_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" />
+					<label for="post_order">Did you feel the host was friendly, helpful, and professional through all steps of your buy?</label>
+				</p>
+				<p>
+					<input type="number" name="star_ratings[issue_resolution_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" />
+					<label for="issues">If there was a problem, or issue, did the host seem willing to work towards a resolution (including re-invoicing if requested), and follow through with the promised resolution?</label>
 				</p>
 
-				<h5><label for="personality">Personality</label></h5>
+				<h3>Recommends Host</h3>
 				<p>
-					<input type="number" name="personality_rating" id="personality" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" />
-					<p>
-					Is the host considerate, open to questions, responds in stated timeframes (or within reason)?
-					</p>
+					<input type="number" name="star_ratings[recommends_host_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" />
+					<label for="recommendation">How willing are you to buy from this host again, or recommend this host to other buyers?</label>
 				</p>
 
-				<h5><label for="comments">Additional Comments</label></h5>
-				<p>
-					<textarea name="comments" id="comments"></textarea>
-				</p>
+				<h3>Additional Comments</h3>
+				<p>Please add any additional comments you would like for other buyers to see. You can add praises to wonderful hosts, examples of problems (high fees, substandard products, communication issues),
+				 how a host went above and beyond, or just an overall statement about your host!</p>
+				<textarea name="comments" id="comments"></textarea>
 
 				<p><input type="submit" value="Submit" tabindex="6" id="submit" name="submit" /></p>
 
@@ -175,6 +181,7 @@ function host_review_edit_form( $atts ) {
 		$post_data = get_post( $review_id );
 		$ratings = get_post_meta( $review_id, '_review_star_ratings', true );
 		$xpost = get_post_meta( $review_id, '_review_xpost', true );
+		$reinvoices = get_post_meta( $review_id, '_review_reinvoices', true );
 		?>
 		<div class="rah-before-form">
 			<?php if( $post_data->post_status == 'pending' ) : ?>
@@ -187,12 +194,12 @@ function host_review_edit_form( $atts ) {
 		<div id="postbox" class="rah-form">
 
 			<form id="edit_review" name="new_post" method="post" action="<?php echo get_permalink( $post->ID); ?>submit">
-				<h5><label for="name">Reviewing</label></h5>
+				<h3>Reviewing</h3>
 				<p>
 					<input size="50" id="name" name="host_name" readonly type="text" value="<?php the_title(); ?>" />
 				</p>
 
-				<h5><label for="title">Review Summary</label></h5>
+				<h3>Review Summary</h3>
 				<p>
 					<input size="50" id="title" name="title" type="text" value="<?php echo $post_data->post_title; ?>" />
 				</p>
@@ -201,45 +208,51 @@ function host_review_edit_form( $atts ) {
 					<strong><label for="xpost">This rating is for a cross-post</label></strong>&nbsp;<input id="xpost" type="checkbox" name="xpost" value="yes" <?php checked( 'yes', $xpost, true ); ?> />
 				</p>
 
-				<h5><label for="buys">Buys</label></h5>
 				<p>
-					<input type="number" name="buys_rating" id="buys" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo $ratings['buys_rating']; ?>" />
-					<p>
-					Do they ask the group to gauge interest? Do they open the buys when stated? Are the buy documents clear and easy to understand? Do they provide good pictures of the items for sale?
-					Anything that relates to the buy process, before it closes.
-					</p>
+					<strong><label for="reinvoices">This host re-invoices within 45 days if requrested</label></strong><br />
+					<input type="radio" name="reinvoices" value="yes" <?php checked( 'yes', $reinvoices, true ); ?> />&nbsp;Yes<br />
+					<input type="radio" name="reinvoices" value="no" <?php checked( 'no', $reinvoices, true ); ?> />&nbsp;No<br />
+					<input type="radio" name="reinvoices" value="na" <?php checked( 'na', $reinvoices, true ); ?> />&nbsp;Not Applicable
 				</p>
 
-				<h5><label for="post-buy">Post-Buy</label></h5>
+				<h3>Efficiency</h3>
 				<p>
-					<input type="number" name="post_buy_rating" id="post-buy" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo $ratings['post_buy_rating']; ?>" />
-					<p>
-					Do they update the group about vendor-to-host shipping status? Do they post when a shipment has arrived? Are invoices promptly delivered. How long does it take to sort and ship?
-					Are items shipped within the host's alloted timeframe?
-					</p>
+					<input type="number" name="star_ratings[invoicing_and_ordering_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo $ratings['invoicing_and_ordering_rating']; ?>" />
+					<label for="">Did the host invoice and pay for your buy in a timeframe you felt was appropriate?</label>
+				</p>
+				<p>
+					<input type="number" name="star_ratings[sorting_and_packing_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo $ratings['sort_and_packing_rating']; ?>" />
+					<label for="post_order">Did the host sort, pack, and invoice for shipping in an appropriate amount of time after the <strong><em>entire</em></strong> order was received?</label>
+				</p>
+				<p>
+					<input type="number" name="star_ratings[shipping_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo $ratings['shipping_rating']; ?>" />
+					<label for="shipping">Was the order mailed, after shipping was paid, in a timeframe that was appropriate?</label>
 				</p>
 
-				<h5><label for="issues">Issue Resolution</label></h5>
+				<h3>Communication/Resolution</h3>
 				<p>
-					<input type="number" name="issues_rating" id="issues" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo $ratings['issues_rating']; ?>" />
-					<p>
-					How does the host react to seller/vendor issues? Do they promptly state when there are issues? Are they clear or transparent about the issues that to arrise? Do they resolve them in a
-					reasonablie amount of time.
-					</p>
+					<input type="number" name="star_ratings[communication_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo $ratings['communication_rating']; ?>" />
+					<label for="communication">How well did the host communicate updates and information about the buys from open until shipment to you?</label>
+				</p>
+				<p>
+					<input type="number" name="star_ratings[professionalism_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo $ratings['professionalism_rating']; ?>" />
+					<label for="post_order">Did you feel the host was friendly, helpful, and professional through all steps of your buy?</label>
+				</p>
+				<p>
+					<input type="number" name="star_ratings[issue_resolution_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo $ratings['issue_resolution_rating']; ?>" />
+					<label for="issues">If there was a problem, or issue, did the host seem willing to work towards a resolution (including re-invoicing if requested), and follow through with the promised resolution?</label>
 				</p>
 
-				<h5><label for="personality">Personality</label></h5>
+				<h3>Recommends Host</h3>
 				<p>
-					<input type="number" name="personality_rating" id="personality" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo $ratings['personality_rating']; ?>" />
-					<p>
-					Is the host considerate, open to questions, responds in stated timeframes (or within reason)?
-					</p>
+					<input type="number" name="star_ratings[recommends_host_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo $ratings['recommends_host_rating']; ?>" />
+					<label for="recommendation">How willing are you to buy from this host again, or recommend this host to other buyers?</label>
 				</p>
 
-				<h5><label for="comments">Additional Comments</label></h5>
-				<p>
-					<textarea name="comments" id="comments"><?php echo $post_data->post_content; ?></textarea>
-				</p>
+				<h3>Additional Comments</h3>
+				<p>Please add any additional comments you would like for other buyers to see. You can add praises to wonderful hosts, examples of problems (high fees, substandard products, communication issues),
+				 how a host went above and beyond, or just an overall statement about your host!</p>
+				<textarea name="comments" id="comments"><?php echo $post_data->post_content; ?></textarea>
 
 				<p><input type="submit" value="Submit" tabindex="6" id="submit" name="submit" /></p>
 
@@ -264,7 +277,8 @@ function host_review_edit_form( $atts ) {
 add_shortcode( 'host_review_edit_form', 'host_review_edit_form' );
 
 function host_review_submit( $atts ) {
-	$ip_ban = rah_check_rate_limit();
+	//$ip_ban = rah_check_rate_limit();
+	$ip_ban = false;
 	if ( is_user_logged_in() && ! $ip_ban ) {
 		global $current_user, $post;
 		get_currentuserinfo();
@@ -272,12 +286,10 @@ function host_review_submit( $atts ) {
 		// Do some minor form validation to make sure there is content
 		if ( isset( $_POST['title'] ) ) { $title =  $_POST['title']; } else { wp_die( 'Please enter a title' ); }
 
-		$buys_rating = $_POST['buys_rating'];
-		$post_buy_rating = $_POST['post_buy_rating'];
-		$issues_rating = $_POST['issues_rating'];
-		$personality_rating = $_POST['personality_rating'];
+		$star_ratings = $_POST['star_ratings'];
 		$post_content = isset( $_POST['comments'] ) ? sanitize_text_field( $_POST['comments'] ) : '';
 		$xpost = isset( $_POST['xpost'] ) ? 'yes' : 'no';
+		$reinvoices = isset( $_POST['reinvoices'] ) ? $_POST['reinvoices'] : 'na';
 
 		// Add the content of the form to $post as an array
 		$review = array(
@@ -298,14 +310,10 @@ function host_review_submit( $atts ) {
 			$id = wp_insert_post( $review );
 		}
 
-		$star_ratings = array( 'buys_rating'        => $buys_rating,
-			                   'post_buy_rating'    => $post_buy_rating,
-			                   'issues_rating'      => $issues_rating,
-			                   'personality_rating' => $personality_rating );
-
 		// Set the Host to be associated with the group
 		update_post_meta( $id, '_review_star_ratings', $star_ratings );
 		update_post_meta( $id, '_review_xpost', $xpost );
+		update_post_meta( $id, '_review_reinvoices', $reinvoices );
 
 		?>
 		<h4>Thanks for your review! We will look it over and, if approved, it will be published. If we see any issues, we'll let you know.</h4>

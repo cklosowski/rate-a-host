@@ -234,11 +234,12 @@ function rah_recalculate_host_ratings( $new_status, $old_status, $post ) {
         $total_points = 0;
         foreach ( $host_reviews as $review ) {
         	$review_ratings = get_post_meta( $review->ID, '_review_star_ratings', true );
+        	$number_of_ratings = count( $review_ratings );
         	$post_total = 0;
         	foreach ( $review_ratings as $review ) {
         		$post_total += (int)$review;
         	}
-        	$post_total = round( ( $post_total/4 ) * 2, 0 ) / 2;
+        	$post_total = round( ( $post_total/$number_of_ratings ) * 2, 0 ) / 2;
         	$total_points += $post_total;
         	$total_reviews++;
         }
