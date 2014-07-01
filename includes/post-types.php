@@ -169,4 +169,20 @@ function rah_review_metabox_callback() {
   	}
 }
 
+function rah_modify_query_order( $query ) {
+	if ( !isset( $query->query['post_type'] ) ){
+		return;
+	}
+
+	if ( $query->query['post_type'] !== 'hosts' && $query->query['post_type'] !== 'groups' ) {
+		return;
+	}
+
+
+	if ( $query->is_archive() && $query->is_main_query() ) {
+		$query->set( 'orderby', 'title' );
+		$query->set( 'order', 'ASC' );
+	}
+}
+add_action( 'pre_get_posts', 'rah_modify_query_order' );
 
