@@ -27,14 +27,21 @@ function rah_get_groups_ajax() {
 	$paths = array_filter( explode( '/', $group_url['path'] ) );
 	$group_name = array_pop( $paths );
 
-	$url = 'https://graph.facebook.com/search?q=' . $group_name . '&type=group&limit=10&client_id=' . FB_API_KEY . '&client_secret=' . FB_API_SECRET . '&access_token=' . $access_token;
-
-	$results = json_decode( wp_remote_retrieve_body( wp_remote_get( $url ) ), true );
-	if ( count( $results['data'] > 0 ) ) {
-		foreach ( $results['data'] as $group ) {
-			$name = $group['name'];
-			$id   = $group['id'];
-			echo '<input type="radio" name="group_id" value="' . $id . '" />' . $name . '<br />';
+	if ( is_numeric( $group_name ) ) {
+		$url = 'https://graph.facebook.com/' . $group_name . '?client_id=' . FB_API_KEY . '&client_secret=' . FB_API_SECRET . '&access_token=' . $access_token;
+		$results = json_decode( wp_remote_retrieve_body( wp_remote_get( $url ) ), true );
+		$name = $results['name'];
+		$id = $results['id'];
+		echo '<input type="radio" name="group_id" value="' . $id . '" />' . $name . '<br />';
+	} else {
+		$url = 'https://graph.facebook.com/search?q=' . $group_name . '&type=group&limit=10&client_id=' . FB_API_KEY . '&client_secret=' . FB_API_SECRET . '&access_token=' . $access_token;
+		$results = json_decode( wp_remote_retrieve_body( wp_remote_get( $url ) ), true );
+		if ( count( $results['data'] > 0 ) ) {
+			foreach ( $results['data'] as $group ) {
+				$name = $group['name'];
+				$id   = $group['id'];
+				echo '<input type="radio" name="group_id" value="' . $id . '" />' . $name . '<br />';
+			}
 		}
 	}
 	die();
