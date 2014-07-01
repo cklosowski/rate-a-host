@@ -72,7 +72,7 @@ function host_registration_form( $atts ) {
 			<strong><em>At this time we only support registering as the host for a single group.</em></strong>
 		</p>
 		<p class="fine-print">
-			<sup>*If you signed up and chose the incorrect group, pelase contact us.</sup>
+			<sup>*If you signed up and chose the incorrect group, please contact us.</sup>
 		</p>
 		<?php
 	}
