@@ -12,7 +12,7 @@ function host_registration_form( $atts ) {
 				<p>
 					Hi <?php echo $current_user->user_firstname; ?>,<br />
 					Please fill out the following information in order to register yourself as a Co-Op Host. Registering as a host allows
-					you to recieve notificaitons of new reviews, manage your presense, and respond to reviews.
+					you to receive notifications of new reviews.
 				</p>
 
 				<label for="title">Host Name:</label>
