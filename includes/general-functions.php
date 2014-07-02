@@ -303,6 +303,52 @@ function rah_send_host_approval_email( $new_status, $old_status, $post ) {
 	}
 }
 
+function rah_send_user_review_approved_email( $new_status, $old_status, $post ) {
+	if ( $post->post_type !== 'reviews' ) {
+		return;
+	}
+
+	if ( $new_status == 'publish' && $old_status != 'publish' ) {
+		// The the author
+		$user_info = get_userdata( $post->post_author );
+		$parent = wp_get_post_parent_id( $post->ID );
+		$parent_post = get_post( $parent );
+
+		if ( !empty( $user_info->user_email ) ) {
+			$message  = 'Hi ' . $user_info->first_name . ',' . "\n";
+			$message .= 'Your review for ' . $parent_post->post_title . ' has been approved.';
+			$message .= "\n\n";
+			$message .= 'Thanks,' . "\n";
+			$message .= 'The Host Reviews Board Team';
+
+			wp_mail( $user_info->user_email, 'Host Review Approved', $message );
+		}
+
+		// Tell the host
+		$host_user_id = get_user_id_from_host_id( $parent );
+		$host_info = get_userdata( $host_user_id );
+		if ( !empty( $host_info->user_email ) ) {
+			$ratings = get_post_meta( $post->ID, '_review_star_ratings', true );
+			$xpost = get_post_meta( $post->ID, '_review_xpost', true );
+			$reinvoices = get_post_meta( $post->ID, '_review_reinvoices', true );
+			$message  = 'Hi ' . $host_info->first_name . ',' . "\n";
+			$message .= 'You have recieved a new review with the following results:' . "\n";
+			$message .= 'Title: ' . $post->post_title . "\n";
+			$message .= 'For Cross Post: ' . $xpost . "\n";
+			$message .= 'Reinvoices before 45 days: ' . $reinvoices . "\n";
+			foreach ( $ratings as $key => $rating ) {
+				$message .= ucwords( str_replace( array( '_', 'rating', 'and' ), array( ' ', '', '&' ), $key ) ) . ': ' . $rating . "\n";
+			}
+			$message .= 'Comments: ' . $post->post_content;
+			$message .= "\n\n";
+			$message .= 'Thanks,' . "\n";
+			$message .= 'The Host Reviews Board Team';
+
+			wp_mail( $host_info->user_email, 'You\'ve Recieved a new Host Review', $message );
+		}
+	}
+}
+
 function rah_check_rate_limit() {
 	$user_ip = $_SERVER['REMOTE_ADDR'];
 	$ip_hash = md5( $user_ip );

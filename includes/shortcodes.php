@@ -315,6 +315,16 @@ function host_review_submit( $atts ) {
 		update_post_meta( $id, '_review_xpost', $xpost );
 		update_post_meta( $id, '_review_reinvoices', $reinvoices );
 
+		if ( !empty( $current_user->user_email ) ) {
+			$message  = 'Hi ' . $current_user->user_firstname . ',' . "\n";
+			$message .= 'We\'ve recieved your review for ' . get_the_title( $post->ID ) . '.' . "\n";
+			$message .= 'It will be reviewed soon, and if approved you will be notified via email.';
+			$message .= "\n\n";
+			$message .= 'Thanks,' . "\n";
+			$message .= 'The Host Reviews Board Team';
+
+			wp_mail( $current_user->user_email, 'Host Review Recieved', $message );
+		}
 		?>
 		<h4>Thanks for your review! We will look it over and, if approved, it will be published. If we see any issues, we'll let you know.</h4>
 		<?php
