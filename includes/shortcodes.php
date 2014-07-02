@@ -112,35 +112,35 @@ function host_review_form( $atts ) {
 
 				<h3>Efficiency</h3>
 				<p>
-					<input type="number" name="star_ratings[invoicing_and_ordering_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" value="" />
+					<input type="number" name="star_ratings[invoicing_and_ordering_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
 					<label for="">Did the host invoice and pay for your buy in a timeframe you felt was appropriate?</label>
 				</p>
 				<p>
-					<input type="number" name="star_ratings[sorting_and_packing_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" />
+					<input type="number" name="star_ratings[sorting_and_packing_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
 					<label for="post_order">Did the host sort, pack, and invoice for shipping in an appropriate amount of time after the <strong><em>entire</em></strong> order was received?</label>
 				</p>
 				<p>
-					<input type="number" name="star_ratings[shipping_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" />
+					<input type="number" name="star_ratings[shipping_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
 					<label for="shipping">Was the order mailed, after shipping was paid, in a timeframe that was appropriate?</label>
 				</p>
 
 				<h3>Communication/Resolution</h3>
 				<p>
-					<input type="number" name="star_ratings[communication_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" />
+					<input type="number" name="star_ratings[communication_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
 					<label for="communication">How well did the host communicate updates and information about the buys from open until shipment to you?</label>
 				</p>
 				<p>
-					<input type="number" name="star_ratings[professionalism_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" />
+					<input type="number" name="star_ratings[professionalism_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
 					<label for="post_order">Did you feel the host was friendly, helpful, and professional through all steps of your buy?</label>
 				</p>
 				<p>
-					<input type="number" name="star_ratings[issue_resolution_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" />
+					<input type="number" name="star_ratings[issue_resolution_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
 					<label for="issues">If there was a problem, or issue, did the host seem willing to work towards a resolution (including re-invoicing if requested), and follow through with the promised resolution?</label>
 				</p>
 
 				<h3>Recommends Host</h3>
 				<p>
-					<input type="number" name="star_ratings[recommends_host_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" />
+					<input type="number" name="star_ratings[recommends_host_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
 					<label for="recommendation">How willing are you to buy from this host again, or recommend this host to other buyers?</label>
 				</p>
 
@@ -217,35 +217,35 @@ function host_review_edit_form( $atts ) {
 
 				<h3>Efficiency</h3>
 				<p>
-					<input type="number" name="star_ratings[invoicing_and_ordering_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo $ratings['invoicing_and_ordering_rating']; ?>" />
+					<input type="number" name="star_ratings[invoicing_and_ordering_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo ! empty( $ratings['invoicing_and_ordering_rating'] ) ? $ratings['invoicing_and_ordering_rating'] : 1; ?>" />
 					<label for="">Did the host invoice and pay for your buy in a timeframe you felt was appropriate?</label>
 				</p>
 				<p>
-					<input type="number" name="star_ratings[sorting_and_packing_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo $ratings['sort_and_packing_rating']; ?>" />
+					<input type="number" name="star_ratings[sorting_and_packing_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo ! empty( $ratings['sorting_and_packing_rating'] ) ? $ratings['sorting_and_packing_rating'] : 1; ?>" />
 					<label for="post_order">Did the host sort, pack, and invoice for shipping in an appropriate amount of time after the <strong><em>entire</em></strong> order was received?</label>
 				</p>
 				<p>
-					<input type="number" name="star_ratings[shipping_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo $ratings['shipping_rating']; ?>" />
+					<input type="number" name="star_ratings[shipping_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo ! empty( $ratings['shipping_rating'] ) ? $ratings['shipping_rating'] : 1; ?>" />
 					<label for="shipping">Was the order mailed, after shipping was paid, in a timeframe that was appropriate?</label>
 				</p>
 
 				<h3>Communication/Resolution</h3>
 				<p>
-					<input type="number" name="star_ratings[communication_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo $ratings['communication_rating']; ?>" />
+					<input type="number" name="star_ratings[communication_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo ! empty( $ratings['communication_rating'] ) ? $ratings['communication_rating'] : 1; ?>" />
 					<label for="communication">How well did the host communicate updates and information about the buys from open until shipment to you?</label>
 				</p>
 				<p>
-					<input type="number" name="star_ratings[professionalism_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo $ratings['professionalism_rating']; ?>" />
+					<input type="number" name="star_ratings[professionalism_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo ! empty( $ratings['professionalism_rating'] ) ? $ratings['professionalism_rating'] : 1; ?>" />
 					<label for="post_order">Did you feel the host was friendly, helpful, and professional through all steps of your buy?</label>
 				</p>
 				<p>
-					<input type="number" name="star_ratings[issue_resolution_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo $ratings['issue_resolution_rating']; ?>" />
+					<input type="number" name="star_ratings[issue_resolution_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo ! empty( $ratings['issue_resolution_rating'] ) ? $ratings['issue_resolution_rating'] : 1; ?>" />
 					<label for="issues">If there was a problem, or issue, did the host seem willing to work towards a resolution (including re-invoicing if requested), and follow through with the promised resolution?</label>
 				</p>
 
 				<h3>Recommends Host</h3>
 				<p>
-					<input type="number" name="star_ratings[recommends_host_rating]" class="rating" data-empty-value="0" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo $ratings['recommends_host_rating']; ?>" />
+					<input type="number" name="star_ratings[recommends_host_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo ! empty( $ratings['recommends_host_rating'] ) ? $ratings['recommends_host_rating'] : 1; ?>" />
 					<label for="recommendation">How willing are you to buy from this host again, or recommend this host to other buyers?</label>
 				</p>
 
