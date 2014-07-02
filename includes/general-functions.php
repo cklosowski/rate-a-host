@@ -259,6 +259,29 @@ function rah_recalculate_host_ratings( $new_status, $old_status, $post ) {
     }
 }
 
+function rah_get_group_rating_stats( $group_id ) {
+	$hosts = get_children( array( 'post_parent' => $group_id, 'post_type' => 'hosts', 'posts_per_page' => -1, 'post_status' => 'publish' ), ARRAY_A );
+	$host_count = is_array( $hosts ) ? count( $hosts ) : 0;
+	$group_rating = 0;
+	$group_reviews = 0;
+	$total_score = 0;
+	$total_hosts = 0;
+	if ( !empty( $hosts ) ) {
+		foreach ( $hosts as $host ) {
+			$host_reviews = get_post_meta( $host['ID'], '_host_review_count', true );
+			if ( $host_reviews > 0 ) {
+				$group_reviews += $host_reviews;
+				$total_score += get_post_meta( $host['ID'], '_host_rating', true );
+				$total_hosts++;
+			}
+		}
+
+		$group_rating = round( ( $total_score/$total_hosts ) * 2, 0 ) / 2;
+	}
+
+	return array( 'group_rating' => $group_rating, 'group_reviews' => $group_reviews );
+}
+
 function rah_send_host_approval_email( $new_status, $old_status, $post ) {
 	if ( $post->post_type !== 'hosts' ) {
 		return;
