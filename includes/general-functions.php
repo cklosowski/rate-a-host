@@ -300,15 +300,17 @@ function rah_check_rate_limit() {
 
 }
 
-add_filter('manage_users_columns', 'rah_add_user_id_column');
-add_filter('manage_groups_posts_columns' , 'rah_add_user_id_column');
-function rah_add_user_id_column($columns) {
+add_filter( 'manage_users_columns', 'rah_add_user_id_column' );
+add_filter( 'manage_groups_posts_columns' , 'rah_add_user_id_column' );
+add_filter( 'manage_reviews_posts_columns', 'rah_add_user_id_column' );
+add_filter( 'manage_hosts_posts_columns', 'rah_add_user_id_column' );
+function rah_add_user_id_column( $columns ) {
     $columns['fb_link'] = 'Facebook Link';
     return $columns;
 }
 
-add_action('manage_users_custom_column', 'rah_show_user_id_column_content', 10, 3);
-function rah_show_user_id_column_content($value, $column_name, $user_id) {
+add_action( 'manage_users_custom_column', 'rah_show_user_id_column_content', 10, 3 );
+function rah_show_user_id_column_content( $value, $column_name, $user_id ) {
     $fb_id = get_user_meta( $user_id, 'social_connect_facebook_id', true );
     $fb_link = 'https://facebook.com/' . $fb_id;
 
@@ -321,12 +323,36 @@ function rah_show_user_id_column_content($value, $column_name, $user_id) {
 
 add_action( 'manage_posts_custom_column' , 'custom_columns', 10, 2 );
 function custom_columns( $column, $post_id ) {
-    $fb_id = get_post_meta( $post_id, '_rah_group_fb_id', true );
+	if ( $column !== 'fb_link' ) {
+		return;
+	}
+
+	$post_type = get_post_type( $post_id );
+	if ( $post_type !== 'reviews' && $post_type !== 'groups' && $post_type !== 'hosts' ) {
+		return;
+	}
+
+	switch( $post_type ) {
+		case 'reviews':
+			$type = 'Review Author';
+			$post_data = get_post( $post_id );
+			$fb_id = get_user_meta( $post_data->post_author, 'social_connect_facebook_id', true );
+			break;
+		case 'groups':
+			$type = 'Group';
+		    $fb_id = get_post_meta( $post_id, '_rah_group_fb_id', true );
+		    break;
+		case 'hosts':
+			$type = 'Host';
+			$user_id = get_user_id_from_host_id( $post_id );
+			$fb_id = get_user_meta( $user_id, 'social_connect_facebook_id', true );
+			break;
+
+	}
+
     $fb_link = 'https://facebook.com/' . $fb_id;
 
-	if ( 'fb_link' == $column ) {
-		echo '<a href="' . $fb_link . '" target="_blank">View Group on Facebook</a>';
-	}
+	echo '<a href="' . $fb_link . '" target="_blank">View ' . $type . ' on Facebook</a>';
 }
 
 function rah_filter_wp_mail_from_name( $from_name ) {
