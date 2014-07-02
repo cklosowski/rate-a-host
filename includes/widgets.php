@@ -36,20 +36,14 @@ class RAH_Host_Widget extends WP_Widget
         </a>
         <header class="entry-header">
           <?php if(get_the_time( get_option( 'date_format' ) )) { ?>
-          <div class="entry-meta"> <span class="cat-links">
-            <?php the_category(', '); ?>
-            </span><!-- .cat-links -->
-          </div>
-          <!-- .entry-meta -->
-
           <h1 class="entry-title"><a href="<?php echo get_permalink( $post->ID ); ?>">
             <?php the_title();?>
           </a></h1>
           <!-- .entry-title -->
           <div class="widget-host-type"><span class="dashicons dashicons-cart"></span><?php echo $types; ?></div>
           <div class="entry-meta clearfix">
-            <div class="date"><a href="<?php the_permalink(); ?>" title="<?php echo esc_attr( get_the_time() ); ?>">
-              Joined On: <?php the_time( get_option( 'date_format' ) ); ?>
+            <div class=""><a href="<?php the_permalink(); ?>" title="<?php echo esc_attr( get_the_time() ); ?>">
+              Joined On:&nbsp;&nbsp;<?php the_time( get_option( 'date_format' ) ); ?>
               </a></div>
               <?php if (isset( $group_name ) ) : ?>
             <div class="group"><img src="<?php echo $group_image; ?>" />
