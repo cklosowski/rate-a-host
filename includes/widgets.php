@@ -95,7 +95,7 @@ class RAH_User_Widget extends WP_Widget
       <strong>Logged In As:</strong> <?php echo $current_user->user_firstname; ?>
       <ul>
         <?php if( current_user_can( 'edit_posts' ) ) :?><li><a href="/wp-admin">Admin Dashboard</a><?php endif; ?>
-        <li><a href="<?php echo wp_logout_url( get_bloginfo( 'url' ) ); ?>">Logout</a></li>
+        <li><a href="<?php echo wp_logout_url( get_bloginfo( 'url' ) ); ?>">Log Out</a></li>
       </ul>
     </div>
     <?php
