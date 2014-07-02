@@ -30,18 +30,24 @@ function rah_get_groups_ajax() {
 	if ( is_numeric( $group_name ) ) {
 		$url = 'https://graph.facebook.com/' . $group_name . '?client_id=' . FB_API_KEY . '&client_secret=' . FB_API_SECRET . '&access_token=' . $access_token;
 		$results = json_decode( wp_remote_retrieve_body( wp_remote_get( $url ) ), true );
-		$name = $results['name'];
-		$id = $results['id'];
-		echo '<input type="radio" name="group_id" value="' . $id . '" />' . $name . '<br />';
+		if ( !isset( $results['error'] ) ) {
+			$name = $results['name'];
+			$id = $results['id'];
+			echo '<input type="radio" name="group_id" value="' . $id . '" />' . $name . '<br />';
+		} else {
+			echo '<p class="alerts error">Group Unable to be located. If your group is secret, please check the box above.<p>';
+		}
 	} else {
 		$url = 'https://graph.facebook.com/search?q=' . $group_name . '&type=group&limit=10&client_id=' . FB_API_KEY . '&client_secret=' . FB_API_SECRET . '&access_token=' . $access_token;
 		$results = json_decode( wp_remote_retrieve_body( wp_remote_get( $url ) ), true );
-		if ( count( $results['data'] > 0 ) ) {
+		if ( !isset( $results['error'] ) && count( $results['data'] > 0 ) ) {
 			foreach ( $results['data'] as $group ) {
 				$name = $group['name'];
 				$id   = $group['id'];
 				echo '<input type="radio" name="group_id" value="' . $id . '" />' . $name . '<br />';
 			}
+		} else {
+			echo '<p class="alerts notice">No groups found<p>';
 		}
 	}
 	die();
