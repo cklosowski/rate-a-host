@@ -94,6 +94,7 @@ class RAH_User_Widget extends WP_Widget
       <div class="user-avatar"><?php echo get_avatar( $current_user->ID, 50 ); ?></div>
       <strong>Logged In As:</strong> <?php echo $current_user->user_firstname; ?>
       <ul>
+        <?php if( current_user_can( 'edit_posts' ) ) :?><li><a href="/wp-admin">Admin Dashboard</a><?php endif; ?>
         <li><a href="<?php echo wp_logout_url( get_bloginfo( 'url' ) ); ?>">Logout</a></li>
       </ul>
     </div>
