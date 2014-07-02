@@ -1,6 +1,7 @@
 <?php
 function rah_host_widget() {
   register_widget('RAH_Host_Widget');
+  register_widget('RAH_User_Widget');
 }
 
 class RAH_Host_Widget extends WP_Widget
@@ -75,6 +76,31 @@ class RAH_Host_Widget extends WP_Widget
         <!-- .entry-header -->
         <?php } ?>
       </header>
+    </div>
+    <?php
+  }
+}
+
+class RAH_User_Widget extends WP_Widget
+{
+
+  function RAH_User_Widget() {
+    parent::__construct(false, 'User Widget');
+  }
+
+  function widget( $args, $instance ) {
+    if ( !is_user_logged_in() ) {
+      return;
+    }
+    global $current_user;
+    get_currentuserinfo();
+    ?>
+    <div class="user-widet-wraper">
+      <div class="user-avatar"><?php echo get_avatar( $current_user->ID, 50 ); ?></div>
+      <strong>Logged In As:</strong> <?php echo $current_user->user_firstname; ?>
+      <ul>
+        <li><a href="<?php echo wp_logout_url( get_bloginfo( 'url' ) ); ?>">Logout</a></li>
+      </ul>
     </div>
     <?php
   }
