@@ -275,8 +275,9 @@ function rah_get_group_rating_stats( $group_id ) {
 				$total_hosts++;
 			}
 		}
-
-		$group_rating = round( ( $total_score/$total_hosts ) * 2, 0 ) / 2;
+		if ( $total_hosts > 0 ) {
+			$group_rating = round( ( $total_score/$total_hosts ) * 2, 0 ) / 2;
+		}
 	}
 
 	return array( 'group_rating' => $group_rating, 'group_reviews' => $group_reviews );
