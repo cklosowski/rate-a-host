@@ -2,6 +2,7 @@
 function rah_host_widget() {
   register_widget('RAH_Host_Widget');
   register_widget('RAH_User_Widget');
+  register_widget('RAH_Stats_Widget');
 }
 
 class RAH_Host_Widget extends WP_Widget
@@ -94,6 +95,30 @@ class RAH_User_Widget extends WP_Widget
       <strong>Logged In As:</strong> <?php echo $current_user->user_firstname; ?>
       <ul>
         <li><a href="<?php echo wp_logout_url( get_bloginfo( 'url' ) ); ?>">Logout</a></li>
+      </ul>
+    </div>
+    <?php
+  }
+}
+
+class RAH_Stats_Widget extends WP_Widget
+{
+
+  function RAH_Stats_Widget() {
+    parent::__construct(false, 'Stats Widget');
+  }
+
+  function widget( $args, $instance ) {
+    $hosts = wp_count_posts( 'hosts' );
+    $groups = wp_count_postS( 'groups' );
+    $reviews = wp_count_posts( 'reviews' );
+    ?>
+    <div class="stats-widet-wrapper">
+      <h1 class="widget-title">Current Site Stats</h1>
+      <ul>
+        <li><strong>Groups:</strong> <?php echo $groups->publish; ?></li>
+        <li><strong>Hosts:</strong> <?php echo $hosts->publish; ?></li>
+        <li><strong>Reviews:</strong> <?php echo $reviews->publish; ?></li>
       </ul>
     </div>
     <?php

@@ -82,7 +82,7 @@ function rah_setup_post_types() {
 		'show_in_menu' 		=> true,
 		'query_var' 		=> true,
 		'map_meta_cap'		=> true,
-		'has_archive' 		=> true,
+		'has_archive' 		=> false,
 		'hierarchical' 		=> false,
 		'supports' 			=> apply_filters( 'rah_reviews_supports', array( 'title', 'editor', 'thumbnail', 'author', 'revisions', 'custom-fields' ) ),
 	);
