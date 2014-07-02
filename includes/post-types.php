@@ -73,18 +73,19 @@ function rah_setup_post_types() {
 	) );
 
 	$reviews_args = array(
-		'labels' 			=> $reviews_labels,
-		'public' 			=> true,
-		'publicly_queryable'=> true,
-		'show_ui' 			=> true,
-		'menu_position'		=> 20,
-		'menu_icon' 		=> 'dashicons-star-filled',
-		'show_in_menu' 		=> true,
-		'query_var' 		=> true,
-		'map_meta_cap'		=> true,
-		'has_archive' 		=> false,
-		'hierarchical' 		=> false,
-		'supports' 			=> apply_filters( 'rah_reviews_supports', array( 'title', 'editor', 'thumbnail', 'author', 'revisions', 'custom-fields' ) ),
+		'labels' 			  => $reviews_labels,
+		'public' 			  => true,
+		'publicly_queryable'  => true,
+		'show_ui' 			  => true,
+		'menu_position'		  => 20,
+		'menu_icon' 		  => 'dashicons-star-filled',
+		'show_in_menu' 		  => true,
+		'query_var' 		  => true,
+		'map_meta_cap'		  => true,
+		'has_archive' 		  => false,
+		'hierarchical' 		  => false,
+		'exclude_from_search' => true,
+		'supports' 			  => apply_filters( 'rah_reviews_supports', array( 'title', 'editor', 'thumbnail', 'author', 'revisions', 'custom-fields' ) ),
 	);
 	register_post_type( 'reviews', apply_filters( 'rah_review_post_type_args', $reviews_args ) );
 
