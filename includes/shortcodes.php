@@ -94,7 +94,7 @@ function host_review_form( $atts ) {
 					<input size="50" id="name" name="host_name" readonly type="text" value="<?php the_title(); ?>" />
 				</p>
 
-				<h3>Review Summary</h3>
+				<h3>Review Title</h3>
 				<p>
 					<input size="50" id="title" name="title" type="text" value="" />
 				</p>
@@ -199,7 +199,7 @@ function host_review_edit_form( $atts ) {
 					<input size="50" id="name" name="host_name" readonly type="text" value="<?php the_title(); ?>" />
 				</p>
 
-				<h3>Review Summary</h3>
+				<h3>Review Title</h3>
 				<p>
 					<input size="50" id="title" name="title" type="text" value="<?php echo $post_data->post_title; ?>" />
 				</p>
