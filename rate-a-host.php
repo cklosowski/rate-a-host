@@ -65,6 +65,7 @@ class RateAHost {
 		add_action( 'widgets_init', 'rah_host_widget' );
 		add_action( 'transition_post_status', 'rah_recalculate_host_ratings', 10, 3 );
 		add_action( 'transition_post_status', 'rah_send_host_approval_email', 10, 3 );
+		add_action( 'admin_print_styles', 'rah_custom_right_now_icons' );
 	}
 
 	public function load_scripts() {
