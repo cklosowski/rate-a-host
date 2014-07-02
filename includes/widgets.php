@@ -59,7 +59,7 @@ class RAH_Host_Widget extends WP_Widget
           </div>
           <?php if ( !user_is_host( $post->ID ) ) :?>
           <div class="widget-review-button">
-            <?php if ( has_user_reviewed_host( $post->ID ) ) : ?>
+            <?php if ( is_user_logged_in() && has_user_reviewed_host( $post->ID ) ) : ?>
                 <a href="<?php echo get_permalink( $post->ID ); ?>edit"><input type="button" value="Update Your Review" /></a>
             <?php else: ?>
                 <a href="<?php echo get_permalink( $post->ID ); ?>new"><input type="button" value="Review This Host" /></a>
