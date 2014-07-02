@@ -18,14 +18,7 @@ function rah_get_groups_ajax() {
 	$access_token = get_user_meta( $current_user->ID, 'fb_access_token', true );
 	$fb_id = get_user_meta( $current_user->ID, 'social_connect_facebook_id', true );
 
-	$group_url = parse_url( $_POST['group'] );
-
-	if ( ! is_array( $group_url ) ) {
-		return false;
-	}
-
-	$paths = array_filter( explode( '/', $group_url['path'] ) );
-	$group_name = array_pop( $paths );
+	$group_name = urlencode( sanitize_text_field( $_POST['group'] ) );
 
 	if ( is_numeric( $group_name ) ) {
 		$url = 'https://graph.facebook.com/' . $group_name . '?client_id=' . FB_API_KEY . '&client_secret=' . FB_API_SECRET . '&access_token=' . $access_token;
@@ -44,7 +37,7 @@ function rah_get_groups_ajax() {
 			foreach ( $results['data'] as $group ) {
 				$name = $group['name'];
 				$id   = $group['id'];
-				echo '<input type="radio" name="group_id" value="' . $id . '" />' . $name . '<br />';
+				echo '<input type="radio" name="group_id" value="' . $id . '" />' . $name . ' - <a target="_blank" href="https://facebook.com/groups/' . $id . '">View on Facebook</a><br />';
 			}
 		} else {
 			echo '<p class="alerts notice">No groups found<p>';

@@ -17,10 +17,10 @@ function host_registration_form( $atts ) {
 
 				<label for="title">Host Name:</label>
 				<p><input size="50" id="title" name="host_title" readonly type="text" value="<?php echo $current_user->user_firstname . ' ' . $current_user->user_lastname; ?>" /></p>
-				<label for="group">Group:</label>
+				<label for="group">Group Name:</label>
 				<p>
 					<label for="is_private">My Group is marked "Secret"</label><input id="is_secret" type="checkbox" value="is_secret" value="1" />
-					<input id="group_input" size="50" id="group" name="host_group" type="text" value="" placeholder="http://facebook.com/group/your-group-name" /><span class="rah-loading"></span>
+					<input id="group_input" size="50" id="group" name="host_group" type="text" value="" placeholder="Your Group Name" /><span class="rah-loading"></span>
 					<div class="hidden" id="response"></div>
 				</p>
 
