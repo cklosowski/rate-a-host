@@ -225,46 +225,51 @@ function rah_recalculate_host_ratings( $new_status, $old_status, $post ) {
 
     if ( ( $new_status == 'publish' && $old_status != 'publish' ) ||
          ( $old_status == 'publish' && $new_status != 'publish' ) ) {
-    	$args = array(
-			'orderby'          => 'post_date',
-			'order'            => 'DESC',
-			'include'          => '',
-			'exclude'          => '',
-			'meta_key'         => '',
-			'meta_value'       => '',
-			'post_type'        => 'reviews',
-			'post_mime_type'   => '',
-			'post_parent'      => $post->post_parent,
-			'post_status'      => 'publish',
-			'suppress_filters' => true );
-
-        $host_reviews = get_posts( $args );
-
-        $total_reviews = 0;
-        $total_points = 0;
-        foreach ( $host_reviews as $review ) {
-        	$review_ratings = get_post_meta( $review->ID, '_review_star_ratings', true );
-        	$number_of_ratings = 0;
-        	$post_total = 0;
-        	foreach ( $review_ratings as $review ) {
-        		if ( !empty ( $review ) ) {
-        			$post_total += (int)$review;
-        			$number_of_ratings++;
-        		}
-
-        	}
-        	$post_total = round( ( $post_total/$number_of_ratings ) * 2, 0 ) / 2;
-        	$total_points += $post_total;
-        	$total_reviews++;
-        }
-        if ( $total_points > 0 ) {
-     		$host_rating = round( ( $total_points/$total_reviews ) * 2, 0 ) / 2;
-        } else {
-        	$host_rating = 0;
-        }
-        update_post_meta( $post->post_parent, '_host_rating', $host_rating );
-        update_post_meta( $post->post_parent, '_host_review_count', $total_reviews );
+    	rah_run_recalculation( $post->post_parent );
     }
+}
+
+function rah_run_recalculation( $host_id ) {
+	$args = array(
+		'orderby'          => 'post_date',
+		'order'            => 'DESC',
+		'include'          => '',
+		'exclude'          => '',
+		'meta_key'         => '',
+		'meta_value'       => '',
+		'post_type'        => 'reviews',
+		'post_mime_type'   => '',
+		'post_parent'      => $host_id,
+		'post_status'      => 'publish',
+		'posts_per_page'   => -1,
+		'suppress_filters' => true );
+
+    $host_reviews = get_posts( $args );
+
+    $total_reviews = 0;
+    $total_points = 0;
+    foreach ( $host_reviews as $review ) {
+    	$review_ratings = get_post_meta( $review->ID, '_review_star_ratings', true );
+    	$number_of_ratings = 0;
+    	$post_total = 0;
+    	foreach ( $review_ratings as $review ) {
+    		if ( !empty ( $review ) ) {
+    			$post_total += (int)$review;
+    			$number_of_ratings++;
+    		}
+
+    	}
+    	$post_total = round( ( $post_total/$number_of_ratings ) * 2, 0 ) / 2;
+    	$total_points += $post_total;
+    	$total_reviews++;
+    }
+    if ( $total_points > 0 ) {
+ 		$host_rating = round( ( $total_points/$total_reviews ) * 2, 0 ) / 2;
+    } else {
+    	$host_rating = 0;
+    }
+    update_post_meta( $host_id, '_host_rating', $host_rating );
+    update_post_meta( $host_id, '_host_review_count', $total_reviews );
 }
 
 function rah_get_group_rating_stats( $group_id ) {

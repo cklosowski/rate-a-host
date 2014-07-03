@@ -67,6 +67,7 @@ class RateAHost {
 		add_action( 'transition_post_status', 'rah_send_host_approval_email', 10, 3 );
 		add_action( 'transition_post_status', 'rah_send_user_review_approved_email', 10, 3 );
 		add_action( 'admin_print_styles', 'rah_custom_right_now_icons' );
+		add_action( 'admin_menu', array( $this, 'rah_setup_admin_menu' ) );
 	}
 
 	public function load_scripts() {
@@ -79,6 +80,41 @@ class RateAHost {
 		add_rewrite_endpoint( 'new', EP_PERMALINK );
 		add_rewrite_endpoint( 'submit', EP_PERMALINK );
 		add_rewrite_endpoint( 'edit', EP_PERMALINK );
+	}
+
+	public function rah_setup_admin_menu() {
+		add_options_page( __( 'Rate A Host', 'rah-txt' ), __( 'Rate A Host', 'rah-txt' ), 'administrator', 'rate-a-host', array( $this, 'show_settings_page' ) );
+	}
+
+	public function show_settings_page() {
+		?>
+		<div class="wrap">
+			<?php
+				if ( isset( $_GET['recount_host_ratings'] ) && $_GET['recount_host_ratings'] == 'true' ) {
+					$host_args = array(
+					'orderby'          => 'post_title',
+					'order'            => 'DESC',
+					'include'          => '',
+					'exclude'          => '',
+					'meta_key'         => '',
+					'meta_value'       => '',
+					'post_type'        => 'hosts',
+					'post_mime_type'   => '',
+					'post_status'      => 'publish',
+					'posts_per_page'   => -1,
+					'suppress_filters' => true );
+					$hosts = get_posts( $host_args );
+
+					foreach ( $hosts as $host ) {
+						rah_run_recalculation( $host->ID );
+					}
+					?><div id="setting-error-settings_updated" class="updated settings-error"><p><strong>Host Reviews Refreshed</strong></p></div><?php
+				}
+			?>
+			<h2>Host Reviews Board - Settings & Utilities</h2>
+			<a class="button-secondary" href="<?php echo admin_url('options-general.php?page=rate-a-host'); ?>&recount_host_ratings=true">Re-calculate Host Ratings</a>
+		</div>
+		<?
 	}
 }
 
