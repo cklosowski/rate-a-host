@@ -26,6 +26,15 @@
 		}
 	});
 
+	$('#issues_na').click( function() {
+		var checked = $(this).prop('checked');
+		if ( checked ) {
+			$(this).prev('div.rating-input').hide();
+		} else {
+			$(this).prev('div.rating-input').show();
+		}
+	});
+
 	$('.rah-form form').submit( function() {
 		$('.rah-form form .alerts').remove();
 		var formId = $(this).attr( 'id' );

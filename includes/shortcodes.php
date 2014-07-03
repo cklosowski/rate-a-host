@@ -135,6 +135,7 @@ function host_review_form( $atts ) {
 				</p>
 				<p>
 					<input type="number" name="star_ratings[issue_resolution_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
+					<input type="checkbox" id="issues_na" name="issues_na" value="1" />&nbsp;<label for="issues_na">Not Applicable</label><br />
 					<label for="issues">If there was a problem, or issue, did the host seem willing to work towards a resolution (including re-invoicing if requested), and follow through with the promised resolution?</label>
 				</p>
 
@@ -182,6 +183,7 @@ function host_review_edit_form( $atts ) {
 		$ratings = get_post_meta( $review_id, '_review_star_ratings', true );
 		$xpost = get_post_meta( $review_id, '_review_xpost', true );
 		$reinvoices = get_post_meta( $review_id, '_review_reinvoices', true );
+		$no_issues = get_post_meta( $review_id, '_review_issues_na', true );
 		?>
 		<div class="rah-before-form">
 			<?php if( $post_data->post_status == 'pending' ) : ?>
@@ -240,6 +242,7 @@ function host_review_edit_form( $atts ) {
 				</p>
 				<p>
 					<input type="number" name="star_ratings[issue_resolution_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" data-clearable="Clear" value="<?php echo ! empty( $ratings['issue_resolution_rating'] ) ? $ratings['issue_resolution_rating'] : 1; ?>" />
+					<input type="checkbox" <?php checked( $no_issues, '1', true ); ?> id="issues_na" name="issues_na" value="1" />&nbsp;<label for="issues_na">Not Applicable</label><br />
 					<label for="issues">If there was a problem, or issue, did the host seem willing to work towards a resolution (including re-invoicing if requested), and follow through with the promised resolution?</label>
 				</p>
 
@@ -290,6 +293,7 @@ function host_review_submit( $atts ) {
 		$post_content = isset( $_POST['comments'] ) ? sanitize_text_field( $_POST['comments'] ) : '';
 		$xpost = isset( $_POST['xpost'] ) ? 'yes' : 'no';
 		$reinvoices = isset( $_POST['reinvoices'] ) ? $_POST['reinvoices'] : 'na';
+		$no_issues = isset( $_POST['issues_na'] ) ? $_POST['issues_na'] : false;
 
 		// Add the content of the form to $post as an array
 		$review = array(
@@ -310,10 +314,14 @@ function host_review_submit( $atts ) {
 			$id = wp_insert_post( $review );
 		}
 
+		if ( !empty( $no_issues ) ) {
+			$star_ratings['issue_resolution_rating'] = 0;
+		}
 		// Set the Host to be associated with the group
 		update_post_meta( $id, '_review_star_ratings', $star_ratings );
 		update_post_meta( $id, '_review_xpost', $xpost );
 		update_post_meta( $id, '_review_reinvoices', $reinvoices );
+		update_post_meta( $id, '_review_issues_na', $no_issues );
 
 		if ( !empty( $current_user->user_email ) ) {
 			$message  = 'Hi ' . $current_user->user_firstname . ',' . "\n";

@@ -189,6 +189,10 @@ function has_user_reviewed_host( $host_id ) {
 }
 
 function rah_generate_stars( $number ) {
+	if ( $number === 0 ) {
+		return 'N/A';
+	}
+
 	$whole = floor( $number );
 	$fraction = $number - $whole;
 	$i = 0;
@@ -240,10 +244,14 @@ function rah_recalculate_host_ratings( $new_status, $old_status, $post ) {
         $total_points = 0;
         foreach ( $host_reviews as $review ) {
         	$review_ratings = get_post_meta( $review->ID, '_review_star_ratings', true );
-        	$number_of_ratings = count( $review_ratings );
+        	$number_of_ratings = 0;
         	$post_total = 0;
         	foreach ( $review_ratings as $review ) {
-        		$post_total += (int)$review;
+        		if ( !empty ( $review ) ) {
+        			$post_total += (int)$review;
+        			$number_of_ratings++;
+        		}
+
         	}
         	$post_total = round( ( $post_total/$number_of_ratings ) * 2, 0 ) / 2;
         	$total_points += $post_total;

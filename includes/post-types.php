@@ -156,6 +156,7 @@ function rah_review_metabox_callback() {
 	$star_ratings = get_post_meta( $post->ID, '_review_star_ratings', true );
 	$xpost = get_post_meta( $post->ID, '_review_xpost', true );
 	$reinvoices = get_post_meta( $post->ID, '_review_reinvoices', true );
+	$issues_na = get_post_meta( $post->ID, '_review_issues_na', true );
 ?>
 	<p>For Cross Post:&nbsp;<?php echo $xpost; ?></p>
 	<p>Re-invoices:&nbsp;<?php echo $reinvoices; ?></p>
