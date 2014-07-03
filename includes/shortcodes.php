@@ -280,10 +280,16 @@ function host_review_edit_form( $atts ) {
 add_shortcode( 'host_review_edit_form', 'host_review_edit_form' );
 
 function host_review_submit( $atts ) {
+	global $post;
 	//$ip_ban = rah_check_rate_limit();
 	$ip_ban = false;
-	if ( is_user_logged_in() && ! $ip_ban ) {
-		global $current_user, $post;
+	if ( has_user_reviewed_host( $post->ID ) && ! isset( $_POST['existing_post_id'] ) ) {
+		?>
+		We understand you are excited to give your host feedback, but you've already submitted a review for this host.<br />
+		If you need to make changes, please wait a few minutes and <a href="<?php the_permalink(); ?>edit">edit your review here</a>.
+		<?php
+	} elseif ( is_user_logged_in() && ! $ip_ban ) {
+		global $current_user;
 		get_currentuserinfo();
 
 		// Do some minor form validation to make sure there is content
