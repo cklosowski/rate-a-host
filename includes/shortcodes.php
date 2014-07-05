@@ -17,10 +17,12 @@ function host_registration_form( $atts ) {
 
 				<label for="title">Host Name:</label>
 				<p><input size="50" id="title" name="host_title" readonly type="text" value="<?php echo $current_user->user_firstname . ' ' . $current_user->user_lastname; ?>" /></p>
-				<label for="group">Group Name:</label>
+				<label for="group_input">Group Name:</label>
 				<p>
-					<label for="is_private">My Group is marked "Secret"</label><input id="is_secret" type="checkbox" value="is_secret" value="1" />
-					<input id="group_input" size="50" id="group" name="host_group" type="text" value="" placeholder="Your Group Name" /><span class="rah-loading"></span>
+					<label for="is_private">My Group is marked "Secret"</label><input id="is_secret" name="is_secret" type="checkbox" value="is_secret" value="1" />
+					<input id="group_input" size="50" name="host_group" type="text" value="" placeholder="Your Group Name" />
+					<input id="group_name" size="50" name="group_name" type="text" value="" placeholder="Your Group Name" style="display: none;" />
+					<span class="rah-loading"></span>
 					<div class="hidden" id="response"></div>
 				</p>
 
@@ -67,13 +69,84 @@ function host_registration_form( $atts ) {
 		</p>
 		<?php
 	} elseif ( rah_is_registered_host() ) {
+		global $current_user;
+		get_currentuserinfo();
+
+		$host_id = get_host_id_from_user_id( $current_user->ID );
+		$host_status = get_post_status( $host_id );
+		switch( $host_status ) {
+			case 'publish':
+				$status = 'Approved';
+				break;
+			case 'pending':
+				$status = 'Pending Approval';
+				break;
+			case 'declined':
+				$status = 'Declined';
+				break;
+			default:
+				$status = ' - ';
+		}
+		$parent = get_post_ancestors( $host_id );
+		if ( $parent ) {
+			$group_url = get_permalink( $parent[0] );
+			$group_name = get_the_title( $parent[0] );
+		}
 		?>
-		<p>
-			<strong><em>At this time we only support registering as the host for a single group.</em></strong>
-		</p>
-		<p class="fine-print">
-			<sup>*If you signed up and chose the incorrect group, please contact us.</sup>
-		</p>
+		<div class="rah-before-form">
+			<p id="host-status">
+				<strong>Current Status:&nbsp;</strong><?php echo $status; ?>
+			</p>
+			<p id="group-association">
+				<strong>Current Group:&nbsp;</strong>
+				<?php if ( $parent ) : ?>
+					<?php echo $group_name; ?>
+				<?php endif; ?>
+				<?php if ( empty( $parent ) ) : ?>
+					No Current Group Association
+				<?php endif; ?>
+				<a href="#" id="host-edit-group">&nbsp;&nbsp;Edit</a>
+			</p>
+		</div>
+		<div id="postbox" class="rah-form" style="display: none;">
+			<form id="new_host" name="new_post" method="post" action="<?php echo get_page_link(); ?>">
+				<label for="group_input">Group Name:</label>
+				<p>
+					<label for="is_private">My Group is marked "Secret"</label><input id="is_secret" name="is_secret" type="checkbox" value="is_secret" value="1" />
+					<input id="group_input" size="50" name="host_group" type="text" value="" placeholder="Your Group Name" />
+					<input id="group_name" size="50" name="group_name" type="text" value="" placeholder="Your Group Name" style="display: none;" />
+					<span class="rah-loading"></span>
+					<div class="hidden" id="response"></div>
+				</p>
+
+				<label for="group-type">Group Type</label>
+				<?php
+				$args = array(
+					'orderby'            => 'ID',
+					'order'              => 'ASC',
+					'show_count'         => 0,
+					'hide_empty'         => 0,
+					'echo'               => 1,
+					'selected'           => 0,
+					'name'               => 'cat',
+					'id'                 => '',
+					'class'              => 'postform',
+					'depth'              => 0,
+					'tab_index'          => 0,
+					'taxonomy'           => 'type',
+					'hide_if_empty'      => false );
+				?>
+				<p><?php wp_dropdown_categories( $args ); ?></p>
+
+				<p><input type="submit" value="Submit" tabindex="6" id="submit" name="submit" /></p>
+
+
+				<input type="hidden" name="type" id="type" value="hosts" />
+				<input type="hidden" name="action" value="register-host" />
+				<?php wp_nonce_field( 'rah-new-host' ); ?>
+			</form>
+		</div>
+		<div class="rah-after-form"></div>
 		<?php
 	}
 }

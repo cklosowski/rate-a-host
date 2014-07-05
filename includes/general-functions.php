@@ -46,10 +46,55 @@ function rah_get_groups_ajax() {
 	die();
 }
 
+function rah_get_secret_groups_ajax() {
+	$sg_query = new WP_Query( "post_type=groups&orderby=title&order=ASC&posts_per_page=-1&meta_key=_rah_secret_group&meta_value=1" );
+
+	if ( $sg_query->have_posts() ) {
+		?>
+		<p id="existing_secret">
+			<select id="existing_groups" name="existing_secret_group">
+				<option value="-1">Select A Group</option>
+				<?php
+				while( $sg_query->have_posts() ) {
+					$sg_query->the_post();
+					?><option value="<?php the_id(); ?>"><?php the_title(); ?></option><?php
+				}
+			?>
+			</select>&nbsp;<input type="checkbox" id="group_not_listed" name="group_not_listed" value="1">&nbsp;<label for="group_not_listed">My Group Isn't Listed</label>
+		</p>
+		<p id="new_secret_group" style="display:none;">
+			<input type="text" size="50" id="new_secret_group_title" name="new_secret_group_title" value="" placeholder="Your Group Name">
+			<textarea name="new_secret_group_description" placeholder="Group Description. You can copy this from your Facebook Group."></textarea>
+		</p>
+		<?php
+	} else {
+		?>
+		<p id="new_secret_group">
+			<input type="hidden" name="group_not_listed" value="1" />
+			<input type="text" size="50" id="new_secret_group_title" name="new_secret_group_title" value="" placeholder="Your Group Name">
+			<textarea name="new_secret_group_description" placeholder="Group Description. You can copy this from your Facebook Group."></textarea>
+		</p>
+		<?php
+	}
+	die();
+}
+
 function rah_insert_host() {
 	if ( isset( $_POST['group_id'] ) && !isset( $_POST['is_secret'] ) ) {
-		$group_id = rah_insert_group( $_POST['group_id'] );
+		$group_id = rah_insert_public_group( $_POST['group_id'] );
+	} elseif ( isset( $_POST['is_secret'] ) ) {
+		if ( isset( $_POST['existing_secret_group'] ) && !empty( $_POST['existing_secret_group'] ) && $_POST['existing_secret_group'] !== -1 && !isset( $_POST['group_not_listed'] ) ) {
+			$group_exists = get_post( $_POST['existing_secret_group'] );
+			if ( !empty( $group_exists ) && $group_exists->post_type === 'groups' ) {
+				$group_id = $_POST['existing_secret_group'];
+			}
+		} elseif ( isset( $_POST['group_not_listed'] ) ) {
+			$group_title = isset( $_POST['new_secret_group_title'] ) ? sanitize_text_field( $_POST['new_secret_group_title'] ) : '';
+			$group_description = isset( $_POST['new_secret_group_description'] ) ? sanitize_text_field( $_POST['new_secret_group_description'] ) : '';
+			$group_id = rah_insert_secret_group( $group_title, $group_description );
+		}
 	}
+
 	global $current_user, $wpdb;
 	get_currentuserinfo();
 
@@ -57,6 +102,13 @@ function rah_insert_host() {
 
 	if ( count( $results ) > 0 ) {
 		$id =  $results[0]->meta_value;
+		$host = array(
+			'post_status'	=> 'pending', // Choose: publish, preview, future, etc.
+			'post_type'		=> 'hosts', // Set the post type based on the IF is post_type X
+			'ID'            => $id,
+			'post_parent'   => $group_id
+		);
+		wp_update_post( $host );
 	} else {
 		// Do some minor form validation to make sure there is content
 		if ( isset( $_POST['host_title'] ) ) { $title =  $_POST['host_title']; } else { wp_die( 'Please enter a title' ); }
@@ -70,29 +122,30 @@ function rah_insert_host() {
 			'ping_status'    => 'closed'
 		);
 
-		if ( isset( $group_id ) ) {
+		if ( isset( $group_id ) && !empty( $group_id ) ) {
 			$host['post_parent'] = $group_id;
 		}
 
 
 		$id = wp_insert_post( $host );
+		update_user_meta( $current_user->ID, '_user_host_id', $id );
+
 
 		// Set the Host ID to be related to the user ID
-		update_user_meta( $current_user->ID, '_user_host_id', $id );
 	}
 
 	wp_set_post_terms( $id, (int)$_POST['cat'], 'type', false);
 
-	if ( isset( $group_id ) ) {
+	if ( isset( $group_id ) && !empty( $group_id ) ) {
 		// Set the Host to be associated with the group
 		update_post_meta( $id, '_user_group_id', $group_id );
 	}
 
-	wp_redirect('/host-dashboard/success');
+	wp_redirect( '/host-dashboard' );
 	die();
 }
 
-function rah_insert_group( $group_id ) {
+function rah_insert_public_group( $group_id ) {
 	global $wpdb;
 	$results = $wpdb->get_results( 'SELECT post_id FROM ' . $wpdb->postmeta . ' WHERE meta_key = "_rah_group_fb_id" AND meta_value = "' . $group_id . '"');
 
@@ -135,6 +188,28 @@ function rah_insert_group( $group_id ) {
 	return $id;
 }
 
+function rah_insert_secret_group( $group_title, $group_description ) {
+	global $current_user;
+	get_currentuserinfo();
+
+	// Add the content of the form to $post as an array
+	$group = array(
+		'post_title'	 => $group_title,
+		'post_content'	 => $group_description,
+		'post_status'	 => 'pending', // Choose: publish, preview, future, etc.
+		'comment_status' => 'closed',
+		'ping_status'    => 'closed',
+		'post_type'		 => 'groups' // Set the post type based on the IF is post_type X
+	);
+
+	$id = wp_insert_post( $group );
+
+	// Add some group meta
+	update_post_meta( $id, '_rah_secret_group', '1' );
+
+	return $id;
+}
+
 function rah_is_registered_host() {
 	global $current_user, $wpdb;
 	get_currentuserinfo();
@@ -154,6 +229,10 @@ function get_user_id_from_host_id( $host_id ) {
 	$results = $wpdb->get_results( 'SELECT user_id FROM ' . $wpdb->usermeta . ' WHERE meta_key = "_user_host_id" AND meta_value = "' . $host_id . '"');
 
 	return $results[0]->user_id;
+}
+
+function get_host_id_from_user_id( $user_id ) {
+	return get_user_meta( $user_id, '_user_host_id', true );
 }
 
 function user_is_host( $host_id ) {
@@ -489,8 +568,11 @@ function custom_columns( $column, $post_id ) {
 	}
 
     $fb_link = 'https://facebook.com/' . $fb_id;
-
-	echo '<a href="' . $fb_link . '" target="_blank">View ' . $type . ' on Facebook</a>';
+    if ( $post_type === 'groups' && empty( $fb_id ) ) {
+    	echo 'Group is Secret';
+    } else {
+		echo '<a href="' . $fb_link . '" target="_blank">View ' . $type . ' on Facebook</a>';
+	}
 }
 
 function rah_filter_wp_mail_from_name( $from_name ) {

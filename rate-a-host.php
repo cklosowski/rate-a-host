@@ -58,6 +58,8 @@ class RateAHost {
 		// Functionality
 		add_action( 'init', 'rah_setup_post_types', 1 );
 		add_action( 'wp_ajax_rah_group_listing', 'rah_get_groups_ajax' );
+		add_action( 'wp_ajax_rah_secret_group_listing', 'rah_get_secret_groups_ajax' );
+
 		add_action( 'delete_post', 'rah_delete_host' );
 		if( 'POST' == $_SERVER['REQUEST_METHOD']
 			&& ( ! empty( $_POST['action'] ) && $_POST['action'] === 'register-host' ) ) {
