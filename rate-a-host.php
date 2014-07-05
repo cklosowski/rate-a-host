@@ -10,7 +10,7 @@ License: GPL V2
 */
 
 define( 'RAH_PATH', plugin_dir_path( __FILE__ ) );
-define( 'RAH_VERSION', '1.0' );
+define( 'RAH_VERSION', '1.1' );
 define( 'RAH_FILE', plugin_basename( __FILE__ ) );
 define( 'RAH_URL', plugins_url( '/', RAH_FILE ) );
 
