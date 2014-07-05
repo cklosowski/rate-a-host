@@ -301,18 +301,46 @@ function rah_send_host_email( $new_status, $old_status, $post ) {
 		return;
 	}
 
+	// Approved
 	if ( $new_status == 'publish' && $old_status != 'publish' ) {
 		$user_id = get_user_id_from_host_id( $post->ID );
 		$user_info = get_userdata( $user_id );
 
-		$message  = 'Hi ' . $user_info->first_name . ',' . "\n";
-		$message .= 'We\'ve looked over your application and have approved your account. Your members can start reviewing you at:' . "\n";
-		$message .= get_permalink( $post->ID ) . 'new/';
-		$message .= "\n\n";
-		$message .= 'Thanks,' . "\n";
-		$message .= 'The Host Reviews Board Team';
+		if ( !empty( $user_info->user_email ) ) {
+			$message  = 'Hi ' . $user_info->first_name . ',' . "\n";
+			$message .= 'We\'ve looked over your application and have approved your account. Your members can start reviewing you at:' . "\n";
+			$message .= get_permalink( $post->ID ) . 'new/';
+			$message .= "\n\n";
+			$message .= 'Thanks,' . "\n";
+			$message .= 'The Host Reviews Board Team';
 
-		wp_mail( $user_info->user_email, 'Host Account Approved', $message );
+			wp_mail( $user_info->user_email, 'Host Account Approved', $message );
+		}
+	}
+
+	// Declined
+	if ( $new_status == 'declined' && $old_status != 'declined' ) {
+		// The the author
+		$user_id = get_user_id_from_host_id( $post->ID );
+		$user_info = get_userdata( $user_id );
+
+		if ( !empty( $user_info->user_email ) ) {
+			if ( isset( $_POST['_review_declined_reason'] ) && !empty( $_POST['_review_declined_reason'] ) ) {
+				$declined_reason = sanitize_text_field( $_POST['_review_declined_reason'] );
+			} else {
+				$declined_reason = 'Please contact us for further information reguarding this rejection.';
+			}
+			$message  = 'Hi ' . $user_info->first_name . ',' . "\n";
+			$message .= 'Your request to be listed as a host has been deined for the following reason(s):' . "\n";
+			$message .= $declined_reason;
+			$message .= "\n";
+			$message .= 'You can edit your request to be a host, and re-submit it for approval if you wish.';
+			$message .= "\n\n";
+			$message .= 'Thanks,' . "\n";
+			$message .= 'The Host Reviews Board Team';
+
+			wp_mail( $user_info->user_email, 'Host Account Declined', $message );
+		}
 	}
 }
 
