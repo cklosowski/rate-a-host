@@ -47,7 +47,7 @@ class RAH_Host_Widget extends WP_Widget
               Joined On:&nbsp;&nbsp;<?php the_time( get_option( 'date_format' ) ); ?>
               </a></div>
               <?php if (isset( $group_name ) ) : ?>
-            <div class="group"><img src="<?php echo $group_image; ?>" />
+            <div class="group"><?php if( $group_image ) :?><img src="<?php echo $group_image; ?>" /> &nbsp;<?php endif; ?>
               <a href="<?php echo $group_url; ?>" title-"<?php echo esc_attr( $group_name ); ?>">
               <?php echo $group_name; ?>
             </a></div>
