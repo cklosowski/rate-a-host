@@ -239,3 +239,75 @@ function rah_glance_items( $items = array() ) {
 
 	return $items;
 }
+
+function rah_declined_post_status() {
+	register_post_status( 'declined', array(
+		'label'                     => _x( 'Declined', 'rah-txt' ),
+		'public'                    => false,
+		'exclude_from_search'       => true,
+		'show_in_admin_all_list'    => false,
+		'show_in_admin_status_list' => true,
+		'label_count'               => _n_noop( 'Declined <span class="count">(%s)</span>', 'Declined <span class="count">(%s)</span>' ),
+	) );
+}
+add_action( 'init', 'rah_declined_post_status' );
+
+function rah_append_post_status_list() {
+	global $post;
+	if(	$post->post_type !== 'reviews' && $post->post_type !== 'hosts' ) {
+		return;
+	}
+
+	$complete = '';
+	$label = '';
+	if( $post->post_status === 'declined' ) {
+		$complete = ' selected="selected"';
+		$label = '<span id="post-status-display">Declined</span>';
+	}
+	echo '
+	<script>
+		jQuery(document).ready(function($){
+			$(\'select#post_status\').append(\'<option value="declined" ' . $complete . '>Declined</option>\');
+			$(\'.misc-pub-section label\').append(\'' . $label . '\');
+		});
+	</script>
+	';
+}
+add_action( 'admin_footer-post.php', 'rah_append_post_status_list' );
+
+function rah_add_declined_reason_box() {
+	global $post;
+	if ( $post->post_type !== 'reviews' && $post->post_type !== 'hosts' ) {
+		return;
+	}
+
+	$declined_reason = get_post_meta( $post->ID, '_review_declined_reason', true );
+	$reason_text = !empty( $declined_reason ) ? $declined_reason : '';
+	$show = $post->post_status === 'declined' ? '' : ' hidden';
+	?>
+	<div class="misc-pub-section rah-declined-reason<?php echo $show; ?>" id="rah-decline-reason">
+		<span style="color: #888;" class="dashicons dashicons-flag"></span>&nbsp;Decline Reason
+		<textarea style="width: 100%" id="rah_declined_reason" name="_review_declined_reason"><?php echo $reason_text; ?></textarea>
+
+	</div>
+	<?
+}
+add_action( 'post_submitbox_misc_actions', 'rah_add_declined_reason_box' );
+
+
+function rah_save_meta_boxes( $post_id ) {
+	$post = get_post( $post_id );
+	if ( $post->post_type !== 'reviews' && $post->post_type !== 'hosts' ) {
+		return;
+	}
+
+	$post_declined = $post->post_status === 'declined' ? true : false;
+
+	if ( $post_declined ) {
+		$declined_text = isset( $_POST['_review_declined_reason'] ) ? sanitize_text_field( $_POST['_review_declined_reason'] ) : '';
+		update_post_meta( $post->ID, '_review_declined_reason', $declined_text );
+	}
+
+
+}
+add_action( 'save_post', 'rah_save_meta_boxes', 10, 1 );

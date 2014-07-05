@@ -296,7 +296,7 @@ function rah_get_group_rating_stats( $group_id ) {
 	return array( 'group_rating' => $group_rating, 'group_reviews' => $group_reviews );
 }
 
-function rah_send_host_approval_email( $new_status, $old_status, $post ) {
+function rah_send_host_email( $new_status, $old_status, $post ) {
 	if ( $post->post_type !== 'hosts' ) {
 		return;
 	}
@@ -316,11 +316,12 @@ function rah_send_host_approval_email( $new_status, $old_status, $post ) {
 	}
 }
 
-function rah_send_user_review_approved_email( $new_status, $old_status, $post ) {
+function rah_send_user_review_email( $new_status, $old_status, $post ) {
 	if ( $post->post_type !== 'reviews' ) {
 		return;
 	}
 
+	// Approved
 	if ( $new_status == 'publish' && $old_status != 'publish' ) {
 		// The the author
 		$user_info = get_userdata( $post->post_author );
@@ -358,6 +359,32 @@ function rah_send_user_review_approved_email( $new_status, $old_status, $post ) 
 			$message .= 'The Host Reviews Board Team';
 
 			wp_mail( $host_info->user_email, 'You\'ve Recieved a new Host Review', $message );
+		}
+	}
+
+	// Declined
+	if ( $new_status == 'declined' && $old_status != 'declined' ) {
+		// The the author
+		$user_info = get_userdata( $post->post_author );
+		$parent = wp_get_post_parent_id( $post->ID );
+		$parent_post = get_post( $parent );
+
+		if ( !empty( $user_info->user_email ) ) {
+			if ( isset( $_POST['_review_declined_reason'] ) && !empty( $_POST['_review_declined_reason'] ) ) {
+				$declined_reason = sanitize_text_field( $_POST['_review_declined_reason'] );
+			} else {
+				$declined_reason = 'Please contact us for further information reguarding this rejection.';
+			}
+			$message  = 'Hi ' . $user_info->first_name . ',' . "\n";
+			$message .= 'Your review for ' . $parent_post->post_title . ' has been deined for the following reason(s):' . "\n";
+			$message .= $declined_reason;
+			$message .= "\n";
+			$message .= 'You can edit your review to correct this, and re-submit it for approval if you wish.';
+			$message .= "\n\n";
+			$message .= 'Thanks,' . "\n";
+			$message .= 'The Host Reviews Board Team';
+
+			wp_mail( $user_info->user_email, 'Host Review Denied', $message );
 		}
 	}
 }
