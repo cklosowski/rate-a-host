@@ -74,9 +74,11 @@
 				$('#group_input').before('<p class="alerts error">Group URL is Required if your group is not secret.</p>');
 				errors = errors + 1;
 			} else if( isSecret === true ) {
-				if ( $('#group_not_listed').prop('checked') && $('#new_secret_group_title').val().trim() === '' ) {
-					$('#new_secret_group').before('<p class="alerts error">A Group Name Is Required</p>');
-					errors = errors + 1;
+				if ( $('#group_not_listed').prop('checked') ) {
+					if ( $('#new_secret_group_title').val().trim() === '' ) {
+						$('#new_secret_group').before('<p class="alerts error">A Group Name Is Required</p>');
+						errors = errors + 1;
+					}
 				} else {
 					if ( $('#existing_groups').val() === '-1' ) {
 						$('#existing_secret').before('<p class="alerts error">Please select a group name from the list</p>');
