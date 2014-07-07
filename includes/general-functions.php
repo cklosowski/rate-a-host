@@ -242,6 +242,75 @@ function user_is_host( $host_id ) {
     return ( $user_host_id === $host_id );
 }
 
+function is_the_host() {
+	if ( !is_single() ) {
+		return;
+	}
+
+	global $post, $current_user;
+	get_currentuserinfo();
+
+	$host_id = get_host_id_from_user_id( $current_user->ID );
+
+	if ( empty( $host_id ) ) {
+		return false;
+	}
+
+	$host_id = (int)$host_id;
+
+	switch( $post->post_type ) {
+		case 'reviews':
+			if ( $post->post_parent === $host_id ) {
+				return true;
+			}
+		break;
+
+		case 'hosts':
+			if ( $post->ID === $host_id ) {
+				return true;
+			}
+		break;
+	}
+
+	return false;
+}
+
+function host_has_replied( $post_id ) {
+	if ( empty( $post_id ) ) {
+		return false;
+	}
+
+	$args = array(
+			'post_id' => $post_id,
+		);
+
+	$comments = get_comments( $args );
+
+	if ( empty( $comments ) ) {
+		return false;
+	}
+
+	$post_data = get_post( $post_id );
+
+	global $current_user;
+	get_currentuserinfo();
+	$host_id = get_host_id_from_user_id( $current_user->ID );
+
+	if ( empty( $host_id ) ) {
+		return false;
+	}
+
+	$host_id = (int)$host_id;
+
+	foreach ( $comments as $comment ) {
+		if ( $host_id === $post_data->post_parent ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 function has_user_reviewed_host( $host_id ) {
 	$user_id = get_current_user_id();
 	$args = array(
@@ -580,4 +649,39 @@ function rah_filter_wp_mail_from_name( $from_name ) {
 }
 add_filter( 'wp_mail_from_name', 'rah_filter_wp_mail_from_name' );
 
+
+function rah_notify_approval_to_reviewer ( $comment_id ) {
+	$comment = get_comment( $comment_id );
+	if ( !$comment ) {
+		return;
+	}
+
+	if ( $comment->comment_approved == 1 ) {
+		$review = get_post( $comment->comment_post_ID );
+		if ( $review->post_type !== 'reviews' ) {
+			return;
+		}
+
+		$host = get_post( $review->post_parent );
+		$author = get_userdata( $review->post_author );
+		$message  = '';
+		$message .= 'Hi,' . "\n" . 'We just wanted to let you know that ' . stripslashes( $host->post_title ) . ' has replied to your review';
+		$message .= "\n";
+		$message .= 'Their reply was:' . "\n\n";
+		$message .= stripslashes( $comment->comment_content );
+		$message .= "\n\n";
+		$message .= 'As a reminder, you can update any of your reviews at anytime.';
+		$message .= "\n\n";
+		$message .= 'Thanks,' . "\n";
+		$message .= 'The Host Reviews Board Team';
+
+		wp_mail(
+			$author->user_email,
+			stripslashes( $host->post_title ) . ' has replied to your host review.',
+			$message
+		);
+	}
+}
+add_action( 'wp_set_comment_status', 'rah_notify_approval_to_reviewer' );
+add_action( 'edit_comment', 'rah_notify_approval_to_reviewer' );
 

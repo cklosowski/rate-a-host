@@ -156,7 +156,10 @@ function host_review_form( $atts ) {
 	if ( is_user_logged_in() ) {
 		global $current_user, $post;
 		get_currentuserinfo();
-		if ( !has_user_reviewed_host( $post->ID ) ) :
+		$user_host_id = (int)get_host_id_from_user_id( $current_user->ID );
+		if ( $user_host_id === $post->ID ) {
+			?>You can't rate yourself.<?php
+		} else if ( !has_user_reviewed_host( $post->ID ) ) :
 		?>
 		<div class="rah-before-form"></div>
 		<div id="postbox" class="rah-form">
@@ -248,7 +251,12 @@ function host_review_form( $atts ) {
 add_shortcode( 'host_review_form', 'host_review_form' );
 
 function host_review_edit_form( $atts ) {
-	if ( is_user_logged_in() ) {
+	global $current_user, $post;
+	get_currentuserinfo();
+	$user_host_id = (int)get_host_id_from_user_id( $current_user->ID );
+	if ( $user_host_id === $post->ID ) {
+		?>You can't rate yourself.<?php
+	} else if ( is_user_logged_in() && has_user_reviewed_host( $post->ID ) ) {
 		global $current_user, $post;
 		get_currentuserinfo();
 		$review_id = has_user_reviewed_host( $post->ID );
@@ -380,7 +388,7 @@ function host_review_submit( $atts ) {
 			'post_status'	=> 'pending', // Choose: publish, preview, future, etc.
 			'post_type'		=> 'reviews', // Set the post type based on the IF is post_type X
 			'post_content'   => $post_content,
-			'comment_status' => 'closed',
+			'comment_status' => 'open',
 			'ping_status'    => 'closed',
 			'post_parent'   => $post->ID
 		);
