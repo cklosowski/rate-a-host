@@ -1,4 +1,25 @@
+var mobileView = window.matchMedia( "(max-width: 768px)" );
+
 (function ($) {
+	function moveHostWidget() {
+		if (mobileView.matches) {
+			$('.host-widet-wraper').prependTo('#primary');
+		} else {
+			$('.host-widet-wraper').insertAfter('.user-widet-wraper');
+		}
+	}
+
+	// Visual changes
+
+	$(document).ready(function () {
+		moveHostWidget();
+	});
+
+	$(window).resize(function() {
+		moveHostWidget();
+	});
+
+	// End Visual changes
 	$('#host-edit-group').click( function() {
 		$('#postbox').show();
 		return false;
