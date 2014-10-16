@@ -210,7 +210,6 @@ function rah_custom_right_now_icons() {
 <?php
 }
 
-add_filter( 'dashboard_glance_items', 'rah_glance_items', 10, 1 );
 function rah_glance_items( $items = array() ) {
 
 	$post_types = array( 'reviews', 'hosts', 'groups' );
@@ -239,6 +238,7 @@ function rah_glance_items( $items = array() ) {
 
 	return $items;
 }
+add_filter( 'dashboard_glance_items', 'rah_glance_items', 10, 1 );
 
 function rah_declined_post_status() {
 	register_post_status( 'declined', array(

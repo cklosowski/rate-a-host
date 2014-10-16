@@ -420,6 +420,13 @@ function host_review_submit( $atts ) {
 
 			wp_mail( $current_user->user_email, 'Host Review Recieved', $message );
 		}
+
+		// Tell the Admins
+		$edit_url = admin_url( 'post.php?post=' . $id . '&action=edit&post_type=review' );
+		$admin_message  = 'A new review has been submitted for approval on Host Reviews Board' . "\n\n";
+		$admin_message .= 'Please login and <a href="' . $edit_url . '"" target="_blank">moderate this review</a>';
+
+		wp_mail( 'info@hostreviewsboard.com', 'New Review to Moderate', $admin_message );
 		?>
 		<h4>Thanks for your review! We will look it over and, if approved, it will be published. If we see any issues, we'll let you know.</h4>
 		<?php

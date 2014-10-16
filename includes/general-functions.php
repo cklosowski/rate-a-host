@@ -141,6 +141,18 @@ function rah_insert_host() {
 		update_post_meta( $id, '_user_group_id', $group_id );
 	}
 
+	// Tell the Admins
+	$edit_host = admin_url( 'post.php?post=' . $id . '&action=edit&post_type=host' );
+
+	$admin_message  = 'A new host has registered for approval on Host Reviews Board' . "\n\n";
+	if ( isset( $group_id ) && !empty( $group_id ) ) {
+		$edit_group = admin_url( 'post.php?post=' . $group_id . '&action=edit&post_type=group' );
+		$admin_message .= 'Please login and <a href="' . $edit_group . '"" target="_blank">verify this group.</a>' . "\n";
+	}
+	$admin_message .= 'Please login and <a href="' . $edit_host . '"" target="_blank">verify this host.</a>';
+
+	wp_mail( 'info@hostreviewsboard.com', 'New Review to Moderate', $admin_message );
+
 	wp_redirect( '/host-dashboard' );
 	die();
 }
@@ -536,6 +548,7 @@ function rah_send_user_review_email( $new_status, $old_status, $post ) {
 
 			wp_mail( $host_info->user_email, 'You\'ve Recieved a new Host Review', $message );
 		}
+
 	}
 
 	// Declined
@@ -586,28 +599,28 @@ function rah_check_rate_limit() {
 
 }
 
+function rah_add_user_id_column( $columns ) {
+	$columns['fb_link'] = 'Facebook Link';
+	return $columns;
+}
 add_filter( 'manage_users_columns', 'rah_add_user_id_column' );
 add_filter( 'manage_groups_posts_columns' , 'rah_add_user_id_column' );
 add_filter( 'manage_reviews_posts_columns', 'rah_add_user_id_column' );
 add_filter( 'manage_hosts_posts_columns', 'rah_add_user_id_column' );
-function rah_add_user_id_column( $columns ) {
-    $columns['fb_link'] = 'Facebook Link';
-    return $columns;
-}
 
-add_action( 'manage_users_custom_column', 'rah_show_user_id_column_content', 10, 3 );
 function rah_show_user_id_column_content( $value, $column_name, $user_id ) {
-    $fb_id = get_user_meta( $user_id, 'social_connect_facebook_id', true );
-    $fb_link = 'https://facebook.com/' . $fb_id;
+	$fb_id = get_user_meta( $user_id, 'social_connect_facebook_id', true );
+	$fb_link = 'https://facebook.com/' . $fb_id;
 
 	if ( 'fb_link' == $column_name ) {
 		return '<a href="' . $fb_link . '" target="_blank">View User on Facebook</a>';
 	}
 
-    return $value;
+	return $value;
 }
+add_action( 'manage_users_custom_column', 'rah_show_user_id_column_content', 10, 3 );
 
-add_action( 'manage_posts_custom_column' , 'custom_columns', 10, 2 );
+
 function custom_columns( $column, $post_id ) {
 	if ( $column !== 'fb_link' ) {
 		return;
@@ -643,6 +656,7 @@ function custom_columns( $column, $post_id ) {
 		echo '<a href="' . $fb_link . '" target="_blank">View ' . $type . ' on Facebook</a>';
 	}
 }
+add_action( 'manage_posts_custom_column' , 'custom_columns', 10, 2 );
 
 function rah_filter_wp_mail_from_name( $from_name ) {
 	return 'Host Reviews Board';
