@@ -42,6 +42,7 @@ class RateAHost {
 		include_once( $includes_path . 'post-types.php' );
 		include_once( $includes_path . 'shortcodes.php' );
 		include_once( $includes_path . 'widgets.php' );
+		include_once( $includes_path . 'open-graph-meta.php' );
 	}
 
 	private function hooks() {
