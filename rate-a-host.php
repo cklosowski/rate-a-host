@@ -62,10 +62,19 @@ class RateAHost {
 		add_action( 'wp_ajax_rah_secret_group_listing', 'rah_get_secret_groups_ajax' );
 
 		add_action( 'delete_post', 'rah_delete_host' );
-		if( 'POST' == $_SERVER['REQUEST_METHOD']
-			&& ( ! empty( $_POST['action'] ) && $_POST['action'] === 'register-host' ) ) {
-			add_action( 'init', 'rah_insert_host' );
+
+		if( 'POST' == $_SERVER['REQUEST_METHOD'] && isset( $_POST['rah-action'] ) && ! empty( $_POST['rah-action'] ) ) {
+			switch( $_POST['rah-action'] ) {
+				case 'register-host':
+					add_action( 'init', 'rah_insert_host' );
+					break;
+
+				case 'edit-host':
+					add_action( 'init', 'rah_edit_host' );
+					break;
+			}
 		}
+
 		add_action( 'widgets_init', 'rah_host_widget' );
 		add_action( 'transition_post_status', 'rah_recalculate_host_ratings', 10, 3 );
 		add_action( 'transition_post_status', 'rah_send_host_email', 10, 3 );

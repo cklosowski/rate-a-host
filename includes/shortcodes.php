@@ -142,8 +142,23 @@ function host_registration_form( $atts ) {
 
 
 				<input type="hidden" name="type" id="type" value="hosts" />
-				<input type="hidden" name="action" value="register-host" />
+				<input type="hidden" name="rah-action" value="register-host" />
 				<?php wp_nonce_field( 'rah-new-host' ); ?>
+			</form>
+		</div>
+		<hr />
+		<div>
+			<h5>Host Settings</h5>
+			<form id="host-settings" method="post" action="<?php echo get_page_link(); ?>">
+				<p id="host-settings">
+				<?php $no_emails = get_post_meta( $host_id, '_no_review_optout', true ); ?>
+				<input type="checkbox" id="host_email_optout" name="host_email_optout" value="1" <?php checked( '1', $no_emails, true ); ?> />
+				&nbsp;<label for="host_email_optout"><strong>Do not</strong> send me emails when I get new reviews</label>
+				</p>
+				<input type="hidden" name="rah-action" value="edit-host" />
+				<input type="hidden" name="host_id" value="<?php echo $host_id; ?>" />
+				<?php wp_nonce_field( 'edit-host', 'rah_edit_host', false, true ); ?>
+				<input type="submit" value="Save Settings" />
 			</form>
 		</div>
 		<div class="rah-after-form"></div>

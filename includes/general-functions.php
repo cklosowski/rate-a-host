@@ -151,10 +151,32 @@ function rah_insert_host() {
 	}
 	$admin_message .= 'Please login and <a href="' . $edit_host . '"" target="_blank">verify this host.</a>';
 
-	wp_mail( 'info@hostreviewsboard.com', 'New Review to Moderate', $admin_message );
+	wp_mail( 'info@hostreviewsboard.com', 'New Host Application', $admin_message );
 
 	wp_redirect( '/host-dashboard' );
 	die();
+}
+
+function rah_edit_host() {
+
+	if ( ! wp_verify_nonce( $_POST['rah_edit_host'], 'edit-host' ) ) {
+		wp_die( 'Cheatin\' eh?' );
+	}
+
+	$host_id = isset( $_POST['host_id'] ) ? $_POST['host_id'] : 0;
+	$opt_out = isset( $_POST['host_email_optout'] ) ? 1 : 0;
+
+	global $current_user;
+	get_currentuserinfo();
+
+	$logged_in_host = get_host_id_from_user_id( $current_user->ID );
+
+	if ( $logged_in_host != $host_id ) {
+		wp_die( 'Nope, sorry.' );
+	}
+
+	update_post_meta( $host_id, '_no_review_optout', $opt_out );
+
 }
 
 function rah_insert_public_group( $group_id ) {
@@ -529,7 +551,8 @@ function rah_send_user_review_email( $new_status, $old_status, $post ) {
 		// Tell the host
 		$host_user_id = get_user_id_from_host_id( $parent );
 		$host_info = get_userdata( $host_user_id );
-		if ( !empty( $host_info->user_email ) ) {
+		$opt_out   = get_post_meta( $parent_post->ID, '_no_review_optout', true );
+		if ( ! empty( $host_info->user_email ) && ! $opt_out ) {
 			$ratings = get_post_meta( $post->ID, '_review_star_ratings', true );
 			$xpost = get_post_meta( $post->ID, '_review_xpost', true );
 			$reinvoices = get_post_meta( $post->ID, '_review_reinvoices', true );
