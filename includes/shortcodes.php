@@ -49,7 +49,7 @@ function host_registration_form( $atts ) {
 
 
 				<input type="hidden" name="type" id="type" value="hosts" />
-				<input type="hidden" name="action" value="register-host" />
+				<input type="hidden" name="rah-action" value="register-host" />
 				<?php wp_nonce_field( 'rah-new-host' ); ?>
 
 			</form>
