@@ -14,7 +14,7 @@ function rah_add_host_og() {
 	$user_id = get_user_id_from_host_id( $post->ID );
 
 	$og_tags = array(
-		'title'       => 'Host Reivews for ' . $post->post_title,
+		'title'       => 'Host Reviews for ' . $post->post_title,
 		'site_name'   => 'Host Reviews Board',
 		'url'         => get_permalink( $post->ID ),
 		'description' => 'Host reivews, ratings, and feedback for ' . $post->post_title,
@@ -52,7 +52,7 @@ function rah_add_group_og() {
 	}
 
 	$og_tags = array(
-		'title'       => 'Host Reivews for ' . $post->post_title,
+		'title'       => 'Host Reviews for ' . $post->post_title,
 		'site_name'   => 'Host Reviews Board',
 		'url'         => get_permalink( $post->ID ),
 		'description' => 'Host list, reivews, ratings, and feedback for ' . $post->post_title,
