@@ -270,10 +270,10 @@ function get_host_id_from_user_id( $user_id ) {
 }
 
 function user_is_host( $host_id ) {
-    global $current_user;
-    get_currentuserinfo();
-    $user_host_id = (int)get_user_meta( $current_user->ID, '_user_host_id', true );
-    return ( $user_host_id === $host_id );
+	global $current_user;
+	get_currentuserinfo();
+	$user_host_id = (int)get_user_meta( $current_user->ID, '_user_host_id', true );
+	return ( $user_host_id === $host_id );
 }
 
 function is_the_host() {
@@ -405,10 +405,10 @@ function rah_recalculate_host_ratings( $new_status, $old_status, $post ) {
 		return;
 	}
 
-    if ( ( $new_status == 'publish' && $old_status != 'publish' ) ||
-         ( $old_status == 'publish' && $new_status != 'publish' ) ) {
-    	rah_run_recalculation( $post->post_parent );
-    }
+	if ( ( $new_status == 'publish' && $old_status != 'publish' ) ||
+		 ( $old_status == 'publish' && $new_status != 'publish' ) ) {
+		rah_run_recalculation( $post->post_parent );
+	}
 }
 
 function rah_run_recalculation( $host_id ) {
@@ -426,32 +426,32 @@ function rah_run_recalculation( $host_id ) {
 		'posts_per_page'   => -1,
 		'suppress_filters' => true );
 
-    $host_reviews = get_posts( $args );
+	$host_reviews = get_posts( $args );
 
-    $total_reviews = 0;
-    $total_points = 0;
-    foreach ( $host_reviews as $review ) {
-    	$review_ratings = get_post_meta( $review->ID, '_review_star_ratings', true );
-    	$number_of_ratings = 0;
-    	$post_total = 0;
-    	foreach ( $review_ratings as $review ) {
-    		if ( !empty ( $review ) ) {
-    			$post_total += (int)$review;
-    			$number_of_ratings++;
-    		}
+	$total_reviews = 0;
+	$total_points = 0;
+	foreach ( $host_reviews as $review ) {
+		$review_ratings = get_post_meta( $review->ID, '_review_star_ratings', true );
+		$number_of_ratings = 0;
+		$post_total = 0;
+		foreach ( $review_ratings as $review ) {
+			if ( !empty ( $review ) ) {
+				$post_total += (int)$review;
+				$number_of_ratings++;
+			}
 
-    	}
-    	$post_total = round( ( $post_total/$number_of_ratings ) * 2, 0 ) / 2;
-    	$total_points += $post_total;
-    	$total_reviews++;
-    }
-    if ( $total_points > 0 ) {
- 		$host_rating = round( ( $total_points/$total_reviews ) * 2, 0 ) / 2;
-    } else {
-    	$host_rating = 0;
-    }
-    update_post_meta( $host_id, '_host_rating', $host_rating );
-    update_post_meta( $host_id, '_host_review_count', $total_reviews );
+		}
+		$post_total = round( ( $post_total/$number_of_ratings ) * 2, 0 ) / 2;
+		$total_points += $post_total;
+		$total_reviews++;
+	}
+	if ( $total_points > 0 ) {
+		$host_rating = round( ( $total_points/$total_reviews ) * 2, 0 ) / 2;
+	} else {
+		$host_rating = 0;
+	}
+	update_post_meta( $host_id, '_host_rating', $host_rating );
+	update_post_meta( $host_id, '_host_review_count', $total_reviews );
 }
 
 function rah_get_group_rating_stats( $group_id ) {
@@ -560,7 +560,7 @@ function rah_send_user_review_email( $new_status, $old_status, $post ) {
 			$message .= 'You have recieved a new review with the following results:' . "\n";
 			$message .= 'Title: ' . $post->post_title . "\n";
 			$message .= 'For Cross Post: ' . $xpost . "\n";
-			$message .= 'Reinvoices before 45 days: ' . $reinvoices . "\n";
+			$message .= 'Reinvoices before 180 days: ' . $reinvoices . "\n";
 			foreach ( $ratings as $key => $rating ) {
 				$message .= ucwords( str_replace( array( '_', 'rating', 'and' ), array( ' ', '', '&' ), $key ) ) . ': ' . $rating . "\n";
 			}
@@ -662,8 +662,8 @@ function custom_columns( $column, $post_id ) {
 			break;
 		case 'groups':
 			$type = 'Group';
-		    $fb_id = get_post_meta( $post_id, '_rah_group_fb_id', true );
-		    break;
+			$fb_id = get_post_meta( $post_id, '_rah_group_fb_id', true );
+			break;
 		case 'hosts':
 			$type = 'Host';
 			$user_id = get_user_id_from_host_id( $post_id );
@@ -672,10 +672,10 @@ function custom_columns( $column, $post_id ) {
 
 	}
 
-    $fb_link = 'https://facebook.com/' . $fb_id;
-    if ( $post_type === 'groups' && empty( $fb_id ) ) {
-    	echo 'Group is Secret';
-    } else {
+	$fb_link = 'https://facebook.com/' . $fb_id;
+	if ( $post_type === 'groups' && empty( $fb_id ) ) {
+		echo 'Group is Secret';
+	} else {
 		echo '<a href="' . $fb_link . '" target="_blank">View ' . $type . ' on Facebook</a>';
 	}
 }

@@ -137,7 +137,7 @@ class RateAHost {
 			<h2>Host Reviews Board - Settings & Utilities</h2>
 			<a class="button-secondary" href="<?php echo admin_url('options-general.php?page=rate-a-host'); ?>&recount_host_ratings=true">Re-calculate Host Ratings</a>
 		</div>
-		<?
+		<?php
 	}
 }
 
