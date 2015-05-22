@@ -203,37 +203,39 @@ function host_review_form( $atts ) {
 
 				<h3>Efficiency</h3>
 				<p>
-					<input type="number" name="star_ratings[invoicing_and_ordering_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
 					<label for="">Did the host invoice and pay for your buy in a timeframe you felt was appropriate?</label>
+					<input type="number" name="star_ratings[invoicing_and_ordering_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
 				</p>
 				<p>
-					<input type="number" name="star_ratings[sorting_and_packing_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
 					<label for="post_order">Did the host sort, pack, and invoice for shipping in an appropriate amount of time after the <strong><em>entire</em></strong> order was received?</label>
+					<input type="number" name="star_ratings[sorting_and_packing_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
 				</p>
 				<p>
-					<input type="number" name="star_ratings[shipping_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
 					<label for="shipping">Was the order mailed, after shipping was paid, in a timeframe that was appropriate?</label>
+					<input type="number" name="star_ratings[shipping_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
 				</p>
 
 				<h3>Communication/Resolution</h3>
 				<p>
-					<input type="number" name="star_ratings[communication_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
 					<label for="communication">How well did the host communicate updates and information about the buys from open until shipment to you?</label>
+					<input type="number" name="star_ratings[communication_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
 				</p>
 				<p>
-					<input type="number" name="star_ratings[professionalism_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
 					<label for="post_order">Did you feel the host was friendly, helpful, and professional through all steps of your buy?</label>
+					<input type="number" name="star_ratings[professionalism_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
 				</p>
 				<p>
+					<label for="issues">If there was a problem, or issue, did the host seem willing to work towards a resolution (including re-invoicing if requested), and follow through with the promised resolution?</label><br />
 					<input type="number" name="star_ratings[issue_resolution_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
-					<input type="checkbox" id="issues_na" name="issues_na" value="1" />&nbsp;<label for="issues_na">Not Applicable</label><br />
-					<label for="issues">If there was a problem, or issue, did the host seem willing to work towards a resolution (including re-invoicing if requested), and follow through with the promised resolution?</label>
+					<span class="issues-na-wrapper">
+						<input type="checkbox" id="issues_na" name="issues_na" value="1" /><label class="issues-label" for="issues_na">I did not have any issues</label>
+					</span>
 				</p>
 
 				<h3>Recommends Host</h3>
 				<p>
-					<input type="number" name="star_ratings[recommends_host_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
 					<label for="recommendation">How willing are you to buy from this host again, or recommend this host to other buyers?</label>
+					<input type="number" name="star_ratings[recommends_host_rating]" class="rating" data-empty-value="1" data-min="1" data-max="5" value="1" />
 				</p>
 
 				<h3>Additional Comments</h3>

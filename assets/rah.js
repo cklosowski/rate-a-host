@@ -62,7 +62,7 @@ var mobileView = window.matchMedia( "(max-width: 768px)" );
 		}
 	});
 
-	$('#group_not_listed').live('click', function() {
+	$('#group_not_listed').on('click', function() {
 		$('.rah-form form .alerts').remove();
 		var checked = $(this).prop('checked');
 		if ( checked ) {
@@ -74,12 +74,13 @@ var mobileView = window.matchMedia( "(max-width: 768px)" );
 		}
 	});
 
-	$('#issues_na').click( function() {
+	$('#issues_na').change( function() {
 		var checked = $(this).prop('checked');
+		var stars   = $(this).parent().prev('div.rating-input');
 		if ( checked ) {
-			$(this).prev('div.rating-input').hide();
+			stars.hide();
 		} else {
-			$(this).prev('div.rating-input').show();
+			stars.show();
 		}
 	});
 

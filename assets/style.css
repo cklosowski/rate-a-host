@@ -7,3 +7,16 @@
 	vertical-align: bottom;
 	display: none;
 }
+
+.issues-na-wrapper {
+	line-height: 45px;
+	margin-left: 5px;
+}
+
+.issues-label {
+	margin-left: 10px;
+}
+
+#issues_na {
+	transform:scale(1.1, 1.1);
+}
