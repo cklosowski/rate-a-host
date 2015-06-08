@@ -10,14 +10,14 @@ function host_registration_form( $atts ) {
 
 			<form id="new_host" name="new_post" method="post" action="<?php echo get_page_link(); ?>">
 				<p>
-					Hi <?php echo $current_user->user_firstname; ?>,<br />
+					<h4>Hi <?php echo $current_user->user_firstname; ?>,</h4>
 					Please fill out the following information in order to register yourself as a Co-Op Host. Registering as a host allows
 					you to receive notifications of new reviews.
 				</p>
 
-				<label for="title">Host Name:</label>
+				<label for="title"><h4>Host Name</h4></label>
 				<p><input size="50" id="title" name="host_title" readonly type="text" value="<?php echo $current_user->user_firstname . ' ' . $current_user->user_lastname; ?>" /></p>
-				<label for="group_input">Group Name:</label>
+				<label for="group_input"><h4>Group Name</h4></label>
 				<p>
 					<label for="is_private">My Group is marked "Secret"</label><input id="is_secret" name="is_secret" type="checkbox" value="is_secret" value="1" />
 					<input id="group_input" size="50" name="host_group" type="text" value="" placeholder="Your Group Name" />
@@ -26,7 +26,7 @@ function host_registration_form( $atts ) {
 					<div class="hidden" id="response"></div>
 				</p>
 
-				<label for="group-type">Group Type</label>
+				<label for="group-type"><h4>Group Type</h4></label>
 				<?php
 				$args = array(
 					'orderby'            => 'ID',
@@ -44,6 +44,15 @@ function host_registration_form( $atts ) {
 					'hide_if_empty'      => false );
 				?>
 				<p><?php wp_dropdown_categories( $args ); ?></p>
+
+				<p>
+					<label for="zip_code"><h4>Zip Code</h4></label>
+					This is an optional field. Providing your zip code will allow users to search for local co-ops as well decide which co-ops to join based off shipping times.
+					<br />
+					<input value= "" type="text" maxlength="5" size="5" name="zip_code" id="zip_code" pattern="[\d]{5}" placeholder="12345" />
+					<input type="submit" id="verify_zip_code" value="Check" disabled="disabled" /><span class="rah-loading"></span>
+					<span id="city_state"></span>
+				</p>
 
 				<p><input type="submit" value="Submit" tabindex="6" id="submit" name="submit" /></p>
 
@@ -72,8 +81,10 @@ function host_registration_form( $atts ) {
 		global $current_user;
 		get_currentuserinfo();
 
-		$host_id = get_host_id_from_user_id( $current_user->ID );
-		$host_status = get_post_status( $host_id );
+		$host_id          = get_host_id_from_user_id( $current_user->ID );
+		$host_status      = get_post_status( $host_id );
+		$host_postal_code = get_post_meta( $host_id, '_user_postal_code', true );
+
 		switch( $host_status ) {
 			case 'publish':
 				$status = 'Approved';
@@ -88,9 +99,18 @@ function host_registration_form( $atts ) {
 				$status = ' - ';
 		}
 		$parent = get_post_ancestors( $host_id );
+
+		$group_name  = '';
+		$group_link  = '';
+		$group_fb_id = '';
+
 		if ( $parent ) {
-			$group_url = get_permalink( $parent[0] );
-			$group_name = get_the_title( $parent[0] );
+			$group_url   = get_permalink( $parent[0] );
+			$group_name  = get_the_title( $parent[0] );
+			$group_fb_id = get_post_meta( $parent[0], '_rah_group_fb_id', true );
+			if ( ! empty( $group_fb_id ) ) {
+				$group_link  = 'https://facebook.com/' . $group_fb_id;
+			}
 		}
 		?>
 		<div class="rah-before-form">
@@ -105,21 +125,25 @@ function host_registration_form( $atts ) {
 				<?php if ( empty( $parent ) ) : ?>
 					No Current Group Association
 				<?php endif; ?>
-				<a href="#" id="host-edit-group">&nbsp;&nbsp;Edit</a>
+				<a href="#" id="host-edit-group">&nbsp;&nbsp;Edit Profile</a>
 			</p>
 		</div>
 		<div id="postbox" class="rah-form" style="display: none;">
 			<form id="new_host" name="new_post" method="post" action="<?php echo get_page_link(); ?>">
-				<label for="group_input">Group Name:</label>
+				<label for="group_input"><h4>Group Name</h4></label>
 				<p>
-					<label for="is_private">My Group is marked "Secret"</label><input id="is_secret" name="is_secret" type="checkbox" value="is_secret" value="1" />
-					<input id="group_input" size="50" name="host_group" type="text" value="" placeholder="Your Group Name" />
-					<input id="group_name" size="50" name="group_name" type="text" value="" placeholder="Your Group Name" style="display: none;" />
+					<label for="is_private">My Group is marked "Secret"</label><input id="is_secret" name="is_secret" type="checkbox" value="is_secret" value="1" <?php checked( true, empty( $group_fb_id ), true ); ?> />
+					<input id="group_input" size="50" name="host_group" type="text" value="<?php echo $group_name; ?>" placeholder="Your Group Name" />
+					<input id="group_name" size="50" name="group_name" type="text" value="<?php echo $group_name; ?>" placeholder="Your Group Name" style="display: none;" />
 					<span class="rah-loading"></span>
-					<div class="hidden" id="response"></div>
+					<div class="hidden" id="response">
+						<?php if ( ! empty( $group_fb_id ) ) : ?>
+							<input type="hidden" name="group_id" value="<?php echo $group_fb_id; ?>" />
+						<?php endif; ?>
+					</div>
 				</p>
 
-				<label for="group-type">Group Type</label>
+				<label for="group-type"><h4>Group Type</h4></label>
 				<?php
 				$args = array(
 					'orderby'            => 'ID',
@@ -137,6 +161,15 @@ function host_registration_form( $atts ) {
 					'hide_if_empty'      => false );
 				?>
 				<p><?php wp_dropdown_categories( $args ); ?></p>
+
+				<p>
+					<label for="zip_code"><h4>Zip Code</h4></label>
+					This is an optional field. Providing your zip code will allow users to search for local co-ops as well decide which co-ops to join based off shipping times.
+					<br />
+					<input value="<?php echo $host_postal_code; ?>" type="text" maxlength="5" size="5" name="zip_code" id="zip_code" pattern="[\d]{5}" placeholder="12345" />
+					<input type="submit" id="verify_zip_code" value="Check" <?php if ( strlen( $host_postal_code ) < 5 ) : ?>disabled="disabled" <?php endif; ?> /><span class="rah-loading"></span>
+					<span id="city_state"></span>
+				</p>
 
 				<p><input type="submit" value="Submit" tabindex="6" id="submit" name="submit" /></p>
 

@@ -1,11 +1,11 @@
 .rah-loading {
-	background-image: url('images/facebook_lo.gif');
-	background-size: 24px 32px;
+	background-image: url('/wp-includes/images/spinner.gif');
+	background-size: 20px 20px;
 	background-repeat: no-repeat;
-	width: 24px;
-	height: 32px;
-	vertical-align: bottom;
+	width: 20px;
+	height: 20px;
 	display: none;
+	vertical-align: middle;
 }
 
 .issues-na-wrapper {
@@ -19,4 +19,20 @@
 
 #issues_na {
 	transform:scale(1.1, 1.1);
+}
+
+input[type="submit"]:disabled,
+input[type="submit"]:disabled:hover {
+	background-color: #BFBEBF;
+	-ms-transition: none;
+	-moz-transition: none;
+	-webkit-transition: none;
+	-o-transition: none;
+	transition: none;
+	cursor: default;
+}
+
+#zip_code, #verify_zip_code {
+	width: auto !important;
+	display: inline-block;
 }

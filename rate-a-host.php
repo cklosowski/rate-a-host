@@ -4,13 +4,13 @@ Plugin Name: Rate a Host
 Plugin URI: https://filament-studios.com
 Description: Allows the rating of a Co-Op Host
 Author: Chris Klosowski
-Version: 1.1.2
+Version: 1.1.3
 Author URI: http://kungfugrep.com
 License: GPL V2
 */
 
 define( 'RAH_PATH', plugin_dir_path( __FILE__ ) );
-define( 'RAH_VERSION', '1.1.2' );
+define( 'RAH_VERSION', '1.1.3' );
 define( 'RAH_FILE', plugin_basename( __FILE__ ) );
 define( 'RAH_URL', plugins_url( '/', RAH_FILE ) );
 
@@ -60,6 +60,7 @@ class RateAHost {
 		add_action( 'init', 'rah_setup_post_types', 1 );
 		add_action( 'wp_ajax_rah_group_listing', 'rah_get_groups_ajax' );
 		add_action( 'wp_ajax_rah_secret_group_listing', 'rah_get_secret_groups_ajax' );
+		add_action( 'wp_ajax_rah_verify_zip', 'rah_verify_zip' );
 
 		add_action( 'delete_post', 'rah_delete_host' );
 

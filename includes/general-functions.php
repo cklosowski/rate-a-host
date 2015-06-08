@@ -103,10 +103,10 @@ function rah_insert_host() {
 	if ( count( $results ) > 0 ) {
 		$id =  $results[0]->meta_value;
 		$host = array(
-			'post_status'	=> 'pending', // Choose: publish, preview, future, etc.
-			'post_type'		=> 'hosts', // Set the post type based on the IF is post_type X
-			'ID'            => $id,
-			'post_parent'   => $group_id
+			'post_status' => 'pending', // Choose: publish, preview, future, etc.
+			'post_type'   => 'hosts', // Set the post type based on the IF is post_type X
+			'ID'          => $id,
+			'post_parent' => $group_id
 		);
 		wp_update_post( $host );
 	} else {
@@ -115,9 +115,9 @@ function rah_insert_host() {
 
 		// Add the content of the form to $post as an array
 		$host = array(
-			'post_title'	=> sanitize_text_field( $title ),
-			'post_status'	=> 'pending', // Choose: publish, preview, future, etc.
-			'post_type'		=> 'hosts', // Set the post type based on the IF is post_type X
+			'post_title'     => sanitize_text_field( $title ),
+			'post_status'    => 'pending', // Choose: publish, preview, future, etc.
+			'post_type'      => 'hosts', // Set the post type based on the IF is post_type X
 			'comment_status' => 'closed',
 			'ping_status'    => 'closed'
 		);
@@ -139,6 +139,23 @@ function rah_insert_host() {
 	if ( isset( $group_id ) && !empty( $group_id ) ) {
 		// Set the Host to be associated with the group
 		update_post_meta( $id, '_user_group_id', $group_id );
+	}
+
+	// Set the postal info
+	if ( ! empty( $_POST['zip_code'] ) && strlen( $_POST['zip_code'] ) === 5 ) {
+		$zip_code    = sanitize_text_field( $_POST['zip_code'] );
+		$postal_data = rah_get_postal_data( $zip_code );
+
+		$lat = $postal_data['results'][0]['geometry']['location']['lat'];
+		$lng = $postal_data['results'][0]['geometry']['location']['lng'];
+
+		update_post_meta( $id, '_user_postal_code', $zip_code );
+		update_post_meta( $id, '_user_lat', $lat );
+		update_post_meta( $id, '_user_lng', $lng );
+	} else {
+		delete_post_meta( $id, '_user_postal_code' );
+		delete_post_meta( $id, '_user_lat' );
+		delete_post_meta( $id, '_user_lng' );
 	}
 
 	// Tell the Admins
@@ -203,12 +220,12 @@ function rah_insert_public_group( $group_id ) {
 
 		// Add the content of the form to $post as an array
 		$group = array(
-			'post_title'	 => $results['name'],
-			'post_content'	 => $results['description'],
-			'post_status'	 => 'pending', // Choose: publish, preview, future, etc.
+			'post_title'     => $results['name'],
+			'post_content'   => $results['description'],
+			'post_status'    => 'pending', // Choose: publish, preview, future, etc.
 			'comment_status' => 'closed',
 			'ping_status'    => 'closed',
-			'post_type'		 => 'groups' // Set the post type based on the IF is post_type X
+			'post_type'      => 'groups' // Set the post type based on the IF is post_type X
 		);
 
 		$id = wp_insert_post( $group );
@@ -228,12 +245,12 @@ function rah_insert_secret_group( $group_title, $group_description ) {
 
 	// Add the content of the form to $post as an array
 	$group = array(
-		'post_title'	 => $group_title,
-		'post_content'	 => $group_description,
-		'post_status'	 => 'pending', // Choose: publish, preview, future, etc.
+		'post_title'     => $group_title,
+		'post_content'   => $group_description,
+		'post_status'    => 'pending', // Choose: publish, preview, future, etc.
 		'comment_status' => 'closed',
 		'ping_status'    => 'closed',
-		'post_type'		 => 'groups' // Set the post type based on the IF is post_type X
+		'post_type'      => 'groups' // Set the post type based on the IF is post_type X
 	);
 
 	$id = wp_insert_post( $group );
@@ -721,4 +738,109 @@ function rah_notify_approval_to_reviewer ( $comment_id ) {
 }
 add_action( 'wp_set_comment_status', 'rah_notify_approval_to_reviewer' );
 add_action( 'edit_comment', 'rah_notify_approval_to_reviewer' );
+
+function rah_verify_zip() {
+
+	$postal_code = $_POST['zip'];
+
+	$results = rah_get_postal_data( $postal_code );
+
+	if ( false === $results ) {
+		echo '0';
+		die();
+	}
+
+	$city  = rah_get_postal_city( $postal_code );
+	$state = rah_get_postal_state( $postal_code );
+
+	if ( empty( $city ) && empty( $state ) ) {
+		echo '0';
+		die();
+	}
+
+	echo $city . ', ' . $state;
+	die();
+}
+
+function rah_get_postal_data( $postal_code ) {
+
+	// See if there is a transient set for this postal code
+	$results = get_transient( 'rah_postcode_data' . $postal_code );
+
+	if ( empty( $results ) ) {
+		// We didn't have this zip in the cache, go ahead and call the service
+		//$url = 'http://geocoder.us/service/json/geocode?zip=' . $postal_code;
+		$url = 'http://maps.google.com/maps/api/geocode/json?components=postal_code:' . $postal_code . '|country:US&sensor=false';
+
+		$results = wp_remote_get( $url );
+
+		if ( is_a( $results, 'WP_Error' ) ) {
+			return false;
+		}
+
+		$results = json_decode( $results['body'], true );
+	}
+
+	$postal_code_data = $results['results'][0]['geometry']['location'];
+
+	if ( !isset( $postal_code_data['lat'] ) || !isset( $postal_code_data['lng'] ) ) {
+		return false;
+	}
+
+	set_transient( 'rah_postcode_data' . $postal_code, $results, WEEK_IN_SECONDS );
+
+	return $results;
+}
+
+function rah_get_postal_city( $postal_code ) {
+
+	$city = '';
+
+	if ( ! empty( $postal_code ) && is_numeric( $postal_code ) ) {
+
+		$postal_data = rah_get_postal_data( $postal_code );
+
+		if ( false === $postal_data ) {
+			return $city;
+		}
+
+		foreach ( $postal_data['results'][0]['address_components'] as $key => $data ) {
+
+			if ( in_array( 'locality', $data['types'] ) ) {
+				$city = $data['long_name'];
+				break;
+			}
+
+		}
+
+	}
+
+	return $city;
+}
+
+function rah_get_postal_state( $postal_code ) {
+
+	$state = '';
+
+	if ( ! empty( $postal_code ) && is_numeric( $postal_code ) ) {
+
+		$postal_data = rah_get_postal_data( $postal_code );
+
+		if ( false === $postal_data ) {
+			return $state;
+		}
+
+		foreach ( $postal_data['results'][0]['address_components'] as $key => $data ) {
+
+			if ( in_array( 'administrative_area_level_1', $data['types'] ) ) {
+				$state = $data['long_name'];
+				break;
+			}
+
+		}
+
+	}
+
+	return $state;
+}
 

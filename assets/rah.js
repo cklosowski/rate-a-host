@@ -74,6 +74,39 @@ var mobileView = window.matchMedia( "(max-width: 768px)" );
 		}
 	});
 
+	$('#zip_code').on('keyup', function() {
+		var length = $(this).val().length;
+		var is_long_enough = ( length == 5 );
+		var verify_button = $('#verify_zip_code');
+
+		if ( is_long_enough ) {
+			verify_button.removeAttr('disabled');
+		} else {
+			verify_button.attr('disabled', 'disabled');
+		}
+	});
+
+	$('#verify_zip_code').on('click', function(e) {
+		e.preventDefault();
+		var data = {
+			'action': 'rah_verify_zip',
+			'zip': $('#zip_code').val(),
+		};
+		if (data.zip.length < 5 ) {
+			return false;
+		}
+		$(this).hide().next('.rah-loading').css('display', 'inline-block');
+		$('#city_state').text('');
+		$.post('/wp-admin/admin-ajax.php', data, function(response) {
+			if ( response != '0' ) {
+				$('#city_state').text(response);
+			} else {
+				$('#city_state').text('No City or State information found for postal code');
+			}
+			$('#verify_zip_code').show().next('.rah-loading').hide();
+		});
+	});
+
 	$('#issues_na').change( function() {
 		var checked = $(this).prop('checked');
 		var stars   = $(this).parent().prev('div.rating-input');
@@ -84,7 +117,7 @@ var mobileView = window.matchMedia( "(max-width: 768px)" );
 		}
 	});
 
-	$('.rah-form form').submit( function() {
+	$('.rah-form form #submit').submit( function() {
 		$('.rah-form form .alerts').remove();
 		var formId = $(this).attr( 'id' );
 
