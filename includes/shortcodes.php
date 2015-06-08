@@ -47,7 +47,7 @@ function host_registration_form( $atts ) {
 
 				<p>
 					<label for="zip_code"><h4>Zip Code</h4></label>
-					This is an optional field. Providing your zip code will allow users to search for local co-ops as well decide which co-ops to join based off shipping times.
+					This is an optional field. Providing your zip code will allow users to search for local co-ops in the near future as well decide which co-ops to join based off shipping times.
 					<br />
 					<input value= "" type="text" maxlength="5" size="5" name="zip_code" id="zip_code" pattern="[\d]{5}" placeholder="12345" />
 					<input type="submit" id="verify_zip_code" value="Check" disabled="disabled" /><span class="rah-loading"></span>
@@ -164,7 +164,7 @@ function host_registration_form( $atts ) {
 
 				<p>
 					<label for="zip_code"><h4>Zip Code</h4></label>
-					This is an optional field. Providing your zip code will allow users to search for local co-ops as well decide which co-ops to join based off shipping times.
+					This is an optional field. Providing your zip code will allow users to search for local co-ops in the near future as well decide which co-ops to join based off shipping times.
 					<br />
 					<input value="<?php echo $host_postal_code; ?>" type="text" maxlength="5" size="5" name="zip_code" id="zip_code" pattern="[\d]{5}" placeholder="12345" />
 					<input type="submit" id="verify_zip_code" value="Check" <?php if ( strlen( $host_postal_code ) < 5 ) : ?>disabled="disabled" <?php endif; ?> /><span class="rah-loading"></span>
