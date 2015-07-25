@@ -846,6 +846,7 @@ function rah_get_postal_state( $postal_code ) {
 
 function rah_search_hosts_distance() {
 	ob_start();
+
 	$nonce = ! empty( $_POST['nonce'] ) ? $_POST['nonce'] : false;
 	if ( ! wp_verify_nonce( $nonce, 'rah-search-hosts' ) ) {
 		echo json_encode( array( 'error' => 'Invalid Nonce' ) );
@@ -898,22 +899,21 @@ function rah_search_hosts_distance() {
 		$found_host_ids = array();
 
 		foreach ( $results as $result ) {
-			$found_hosts[ $result['post_id'] ] = $result['distance'];
+			$found_hosts[ $result['post_id'] ] = (float) $result['distance'];
 		}
 
 		asort( $found_hosts );
-
-		$found_host_ids[] = array_keys( $found_hosts );
+		$found_host_ids = array_keys( $found_hosts );
 
 		$query_args = array(
 			'posts_per_page' => -1,
 			'post__in'       => $found_host_ids,
 			'post_type'      => 'hosts',
-			'order_by'       => 'post__in',
+			'orderby'        => 'post__in',
+			'cache_results'  => false,
 		);
 
 		$query = new WP_Query( $query_args );
-
 		while ( $query->have_posts() ) {
 			$query->the_post();
 
