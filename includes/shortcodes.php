@@ -485,3 +485,29 @@ function host_review_submit( $atts ) {
 	}
 }
 add_shortcode( 'host_review_submit', 'host_review_submit' );
+
+function host_search_callback() {
+	?>
+	<h3><?php _e( 'Search for hosts near you', 'rah' ); ?></h3>
+	<div class="search-fields">
+		<label for="zip_code"><?php _e( 'Zip Code', 'rah' ); ?></label> <input value= "" type="text" maxlength="5" size="5" name="zip_code" id="zip_code" pattern="[\d]{5}" placeholder="12345" />
+		<label for="distance"><?php _e( 'Within', 'rah' ); ?></label>
+		<select name="distance" id="distance">
+			<option value="10">10</option>
+			<option value="20">20</option>
+			<option value="30">30</option>
+			<option value="150">150</option>
+			<option value="300">300</option>
+		</select>
+		<?php _e( 'Miles', 'rah' ); ?>
+		<input type="submit" id="submit-host-search" value="<?php _e( 'Search', 'rah' ); ?>" />
+		<span class="rah-loading"></span>
+		<?php wp_nonce_field( 'rah-search-hosts' ); ?>
+	</div>
+	<div class="search-results" style="display: none;">
+		<h4 class="search-meta">Showing hosts within <span class="user-input" id="chosen-distance"></span> miles of <span class="user-input" id="chosen-zip"></span></h4>
+		<div class="results-set"></div>
+	</div>
+	<?php
+}
+add_shortcode( 'host_search', 'host_search_callback' );

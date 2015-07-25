@@ -175,5 +175,53 @@ var mobileView = window.matchMedia( "(max-width: 768px)" );
 		}
 	});
 
+	var Search_Hosts = {
+		init : function() {
+			this.process_distance_search();
+		},
+
+		process_distance_search : function() {
+			$('#submit-host-search').click( function(e) {
+				$('#zip_code').css('border', '1px solid rgba(0, 0, 0, 0.05)').css('background-color', '#f9f9f9');
+
+				var zip      = $('#zip_code').val();
+				var distance = $('#distance').val();
+				var nonce    = $('input[name="_wpnonce"]').val();
+				var action   = 'rah_search_hosts_distance';
+
+				if ( zip == '' || zip.length < 5 ) {
+					$('#zip_code').css('border', '1px solid #993333').css('background-color', '#FFCCCC');
+					return false;
+				}
+
+				$('.rah-loading').css('display', 'inline-block');
+				$(this).attr('disabled','disabled');
+
+				var data = {
+					'action': action,
+					'zip': zip,
+					'distance': distance,
+					'nonce': nonce,
+				}
+
+				$.post('/wp-admin/admin-ajax.php', data, function(response) {
+					if ( response.error ) {
+						alert( response.error);
+						return false;
+					} else {
+						$('#submit-host-search').removeAttr('disabled');
+						$('.rah-loading').css('display', 'none');
+						$('#chosen-distance').text(distance);
+						$('#chosen-zip').text(zip);
+						$('.results-set').html(response);
+						$('.search-results').show();
+					}
+				});
+
+			});
+		},
+	};
+	Search_Hosts.init();
+
 
 })(jQuery);

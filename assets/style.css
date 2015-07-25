@@ -32,7 +32,51 @@ input[type="submit"]:disabled:hover {
 	cursor: default;
 }
 
+.search-fields label {
+	font-size: 1.2em;
+	font-weight: 400;
+}
+
+.search-fields label:not(:first-child) {
+	margin-left: 25px;
+}
+
+.search-fields input[type="submit"] {
+	display: inline-block;
+	margin-left: 25px;
+}
+
 #zip_code, #verify_zip_code {
 	width: auto !important;
 	display: inline-block;
+}
+
+#distance {
+	height: 40px;
+	width: auto !important;
+}
+
+.search-results h4 {
+	color: #9c9c9c;
+	text-transform: uppercase;
+}
+
+.search-results .user-input {
+	font-style: italic;
+	font-weight: 600;
+}
+
+.results-set {
+	padding-left: 5px;
+}
+
+.results-set .host-distance {
+	font-size: .75em;
+	font-weight: normal;
+	font-style: italic;
+	color: #999;
+}
+
+.results-set .no-results {
+	font-size: 1.5em;
 }

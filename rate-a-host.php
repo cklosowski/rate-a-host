@@ -54,13 +54,14 @@ class RateAHost {
 		add_action( 'init', 'rah_set_social_tokens', 10 );
 
 		// Access restriction
-		add_action( 'login_head', 'rah_no_login_php', 1 );
+		//add_action( 'login_head', 'rah_no_login_php', 1 );
 
 		// Functionality
 		add_action( 'init', 'rah_setup_post_types', 1 );
 		add_action( 'wp_ajax_rah_group_listing', 'rah_get_groups_ajax' );
 		add_action( 'wp_ajax_rah_secret_group_listing', 'rah_get_secret_groups_ajax' );
 		add_action( 'wp_ajax_rah_verify_zip', 'rah_verify_zip' );
+		add_action( 'wp_ajax_rah_search_hosts_distance', 'rah_search_hosts_distance' );
 
 		add_action( 'delete_post', 'rah_delete_host' );
 
@@ -85,9 +86,20 @@ class RateAHost {
 	}
 
 	public function load_scripts() {
-		wp_enqueue_style( 'rah-css', RAH_URL . 'assets/style.css', NULL, RAH_VERSION, 'all' );
-		wp_enqueue_script( 'rah-ajax', RAH_URL . 'assets/rah.js', array( 'jquery' ), RAH_VERSION, true );
-		wp_enqueue_script( 'rah-ratings', RAH_URL . 'assets/star-rating.js', array( 'jquery' ), RAH_VERSION );
+
+		$prefix = '';
+		if ( ! defined( 'WP_DEBUG' ) || false === WP_DEBUG ) {
+			$prefix = '.min';
+		}
+
+		wp_register_style( 'rah-css', RAH_URL . 'assets/style' . $prefix . '.css', NULL, RAH_VERSION, 'all' );
+		wp_enqueue_style( 'rah-css' );
+
+		wp_register_script( 'rah-ajax', RAH_URL . 'assets/rah' . $prefix . '.js', array( 'jquery' ), RAH_VERSION, true );
+		wp_enqueue_script( 'rah-ajax' );
+
+		wp_register_script( 'rah-ratings', RAH_URL . 'assets/star-rating' . $prefix . '.js', array( 'jquery' ), RAH_VERSION );
+		wp_enqueue_script( 'rah-ratings' );
 
 	}
 

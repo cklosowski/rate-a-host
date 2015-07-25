@@ -844,3 +844,215 @@ function rah_get_postal_state( $postal_code ) {
 	return $state;
 }
 
+function rah_search_hosts_distance() {
+	ob_start();
+	$nonce = ! empty( $_POST['nonce'] ) ? $_POST['nonce'] : false;
+	if ( ! wp_verify_nonce( $nonce, 'rah-search-hosts' ) ) {
+		echo json_encode( array( 'error' => 'Invalid Nonce' ) );
+		die();
+	}
+
+	$zip      = ! empty( $_POST['zip'] )      ? sanitize_text_field( $_POST['zip'] )       : false;
+	$distance = ! empty( $_POST['distance'] ) ? sanitize_text_field( $_POST['distance'] )  : false;
+
+	if ( empty( $zip ) || empty( $distance ) ) {
+		echo json_encode( array( 'error' => 'Invalid Zip or Distance' ) );
+		die();
+	}
+
+	$postal_code_data = rah_get_coordinates_from_postal_code( $zip );
+
+	if ( empty( $postal_code_data ) ) {
+		echo json_encode( array( 'error' => 'Invalid Postal Data' ) );
+		die();
+	}
+
+	$lat  = ! empty( $postal_code_data['lat'] ) ? $postal_code_data['lat'] : false;
+	$long = ! empty( $postal_code_data['lng'] ) ? $postal_code_data['lng'] : false;
+
+	if ( empty( $lat ) || empty( $long ) ) {
+		echo json_encode( array( 'error' => 'Invalid Postal Data' ) );
+		die();
+	}
+
+	global $wpdb;
+
+	$sql = "SELECT T.post_id AS post_id, T.distance AS distance FROM (".
+			"SELECT p.ID AS post_id, ".
+			"(3959 * acos(cos(radians(". $lat .")) * cos(radians(latitude.meta_value)) * cos( radians(longitude.meta_value) - ".
+			"radians(". $long .")) + sin(radians(". $lat .")) * sin(radians(latitude.meta_value)))) ".
+			"AS distance ".
+			"FROM {$wpdb->posts} p ".
+			"LEFT JOIN {$wpdb->postmeta} AS latitude ON latitude.post_id = p.ID AND latitude.meta_key = '_user_lat' ".
+			"LEFT JOIN {$wpdb->postmeta} AS longitude ON longitude.post_id = p.ID AND longitude.meta_key = '_user_lng' ".
+			"WHERE p.post_type = 'hosts' AND ".
+			"p.post_status = 'publish' ".
+			"ORDER BY distance".
+		") AS T WHERE T.distance <= " . $distance;
+
+	$results = $wpdb->get_results( $sql, ARRAY_A );
+
+	if ( ! empty( $results ) ) {
+
+		$found_hosts    = array();
+		$found_host_ids = array();
+
+		foreach ( $results as $result ) {
+			$found_hosts[ $result['post_id'] ] = $result['distance'];
+			$found_host_ids[] = $result['post_id'];
+		}
+
+		$query_args = array(
+			'posts_per_page' => -1,
+			'post__in'       => $found_host_ids,
+			'post_type'      => 'hosts',
+		);
+
+		$query = new WP_Query( $query_args );
+
+		while ( $query->have_posts() ) {
+			$query->the_post();
+
+			$distance = $found_hosts[ get_the_id() ];
+			if ( empty( $distance ) ) {
+				$distance = 'In ' . $zip;
+			} else {
+				$distance = round( $distance ) . ' miles';
+			}
+
+			$parent = get_post_ancestors( get_the_id() );
+			if ( $parent ) {
+				$group_url   = get_permalink( $parent[0] );
+				$group_name  = get_the_title( $parent[0] );
+				$group_image = get_post_meta( $parent[0], '_rah_group_fb_icon', true );
+			}
+
+			$group_types = get_the_terms( get_the_id(), 'type' );
+			$types = implode( ', ', wp_list_pluck( $group_types, 'name' ) );
+			$review_count    = get_post_meta( get_the_id(), '_host_review_count', true );
+			$host_location   = get_post_meta( get_the_id(), '_user_postal_code', true );
+			$location_string = '';
+
+			if ( ! empty( $host_location ) ) {
+				$city  = rah_get_postal_city( $host_location );
+				$state = rah_get_postal_state( $host_location );
+
+				if ( ! empty( $city ) ) {
+					$location_string .= $city . ', ';
+				}
+
+				$location_string .= $state;
+			}
+			?>
+
+			<section id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+				<?php do_action( 'interface_before_post_header' ); ?>
+				<article>
+				<a href="<?php the_permalink(); ?>" title="<?php the_title_attribute();?>">
+					<div class="archive-avatar">
+					<?php echo get_avatar( get_the_author_meta( 'ID' ) ); ?>
+					</div>
+				</a>
+				<header class="entry-header">
+					<?php if (get_the_author() !=''){?>
+					<div class="entry-meta"> <span class="cat-links">
+						<?php the_category(', '); ?>
+						</span><!-- .cat-links -->
+					</div>
+					<?php } ?>
+					<!-- .entry-meta -->
+					<h1 class="entry-title"> <a href="<?php the_permalink(); ?>" title="<?php the_title_attribute();?>">
+						<?php the_title();?> <span class="host-distance"><?php echo $distance; ?></span>
+						</a> </h1>
+					<!-- .entry-title -->
+					<?php if (get_the_author() !=''){?>
+					<div class="entry-meta clearfix">
+					<?php if ( ! empty( $location_string ) ) : ?>
+						<div class="location"><span class="dashicons dashicons-location-alt"></span><?php echo $location_string; ?></div>
+					<?php endif; ?>
+						<div class="date"><a href="<?php the_permalink(); ?>" title="<?php echo esc_attr( get_the_time() ); ?>">
+						Joined On: <?php the_time( get_option( 'date_format' ) ); ?>
+						</a></div>
+						<?php if ( !empty( $parent ) ) : ?>
+						<div class="group"><?php if( $group_image ) :?><img src="<?php echo $group_image; ?>" /> &nbsp;<?php endif; ?>
+						<a href="<?php echo $group_url; ?>" title-"<?php echo esc_attr( $group_name ); ?>">
+						<?php echo $group_name; ?>
+						</a></div>
+						<?php unset( $parent ); ?>
+					<?php endif; ?>
+						<br />
+					<div class="hosts-ratings-wrapper">
+						<?php echo rah_generate_stars( get_post_meta( get_the_id(), '_host_rating', true ) ); ?><br />
+						<?php printf( _n( '%d Review', '%d Reviews', $review_count, 'interface' ), $review_count ); ?>
+					</div>
+					</div>
+					<!-- .entry-meta -->
+					</header>
+					<!-- .entry-header -->
+					<div class="entry-content clearfix">
+						<?php the_excerpt(); ?>
+					</div>
+					<!-- .entry-content -->
+					<footer class="entry-meta clearfix"> <span class="tag-links">
+					<?php $tag_list = get_the_tag_list( '', __( ' ', 'interface' ) );
+							if(!empty($tag_list)){
+								echo $tag_list;
+							}?>
+					</span><!-- .tag-links -->
+					<?php
+						echo '<a class="readmore" href="' . get_permalink() . 'new" title="'.the_title( '', '', false ).'">'.__( 'Rate Host', 'interface' ).'</a>';
+					?>
+					</footer>
+					<!-- .entry-meta -->
+				<?php } else { ?>
+				</header>
+				<?php } ?>
+				</article>
+			</section>
+
+			<?php
+		}
+	} else {
+		?><div class="no-results">No hosts found for this range.</div><?php
+	}
+
+	echo ob_get_clean();
+	die();
+
+}
+
+function rah_get_coordinates_from_postal_code( $postal_code ) {
+	// See if there is a transient set for this postal code
+	$from_cache = get_transient( 'postal_code_coordinates_' . $postal_code );
+
+	if ( $from_cache ) {
+		return $from_cache;
+	}
+
+	// We didn't have this zip in the cache, go ahead and call the service
+	//$url = 'http://geocoder.us/service/json/geocode?zip=' . $postal_code;
+	$url = 'http://maps.google.com/maps/api/geocode/json?components=postal_code:' . $postal_code . '&sensor=false';
+
+	$results = wp_remote_get( $url );
+
+	if ( is_a( $results, 'WP_Error' ) ) {
+		return FALSE;
+	}
+
+	$postal_code_data = json_decode( $results['body'], true );
+
+	$postal_code_data = $postal_code_data['results'][0]['geometry']['location'];
+
+	if ( !isset( $postal_code_data['lat'] ) || !isset( $postal_code_data['lng'] ) ) {
+		return false;
+	}
+
+	$postal_code_results['lat'] = $postal_code_data['lat'];
+	$postal_code_results['lng'] = $postal_code_data['lng'];
+
+	// Since we didn't have this stored, let's keep it for a week
+	set_transient( 'postal_code_coordinates_' . $postal_code, $postal_code_results, 604800 );
+
+	return $postal_code_results;
+}
+
