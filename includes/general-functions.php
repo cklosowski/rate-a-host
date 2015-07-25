@@ -906,6 +906,7 @@ function rah_search_hosts_distance() {
 			'posts_per_page' => -1,
 			'post__in'       => $found_host_ids,
 			'post_type'      => 'hosts',
+			'order_by'       => 'post__in',
 		);
 
 		$query = new WP_Query( $query_args );
