@@ -899,8 +899,11 @@ function rah_search_hosts_distance() {
 
 		foreach ( $results as $result ) {
 			$found_hosts[ $result['post_id'] ] = $result['distance'];
-			$found_host_ids[] = $result['post_id'];
 		}
+
+		asort( $found_hosts );
+
+		$found_host_ids[] = array_keys( $found_hosts );
 
 		$query_args = array(
 			'posts_per_page' => -1,
