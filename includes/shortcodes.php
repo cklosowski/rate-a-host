@@ -490,7 +490,7 @@ function host_search_callback() {
 	?>
 	<h3><?php _e( 'Search for hosts near you', 'rah' ); ?></h3>
 	<div class="search-fields">
-		<label for="zip_code"><?php _e( 'Zip Code', 'rah' ); ?></label> <input value= "" type="text" maxlength="5" size="5" name="zip_code" id="zip_code" pattern="[\d]{5}" placeholder="12345" />
+		<label for="zip_code"><?php _e( 'Zip Code', 'rah' ); ?></label> <input value= "" type="number" maxlength="5" size="5" name="zip_code" id="zip_code" pattern="[\d]{5}" placeholder="12345" />
 		<label for="distance"><?php _e( 'Within', 'rah' ); ?></label>
 		<select name="distance" id="distance">
 			<option value="10">10</option>
