@@ -61,7 +61,7 @@ class RateAHost {
 		add_action( 'wp_ajax_rah_group_listing', 'rah_get_groups_ajax' );
 		add_action( 'wp_ajax_rah_secret_group_listing', 'rah_get_secret_groups_ajax' );
 		add_action( 'wp_ajax_rah_verify_zip', 'rah_verify_zip' );
-		add_action( 'wp_ajax_rah_search_hosts_distance', 'rah_search_hosts_distance' );
+		add_action( 'wp_ajax_nopriv_rah_search_hosts_distance', 'rah_search_hosts_distance' );
 
 		add_action( 'delete_post', 'rah_delete_host' );
 
