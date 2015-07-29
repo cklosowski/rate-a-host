@@ -205,6 +205,7 @@ var mobileView = window.matchMedia( "(max-width: 768px)" );
 				}
 
 				$.post('/wp-admin/admin-ajax.php', data, function(response) {
+					ga('send', 'event', { eventCategory: 'search', eventAction: 'host', eventLabel: 'distance', eventValue: distance });
 					if ( response.error ) {
 						alert( response.error);
 						return false;
