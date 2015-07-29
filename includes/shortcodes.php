@@ -478,6 +478,7 @@ function host_review_submit( $atts ) {
 
 		wp_mail( 'info@hostreviewsboard.com', 'New Review to Moderate', $admin_message );
 		?>
+		<script>ga('send', 'event', { eventCategory: 'review', eventAction: 'submitted'});</script>
 		<h4>Thanks for your review! We will look it over and, if approved, it will be published. If we see any issues, we'll let you know.</h4>
 		<?php
 	} else {
@@ -505,7 +506,7 @@ function host_search_callback() {
 		<?php wp_nonce_field( 'rah-search-hosts' ); ?>
 	</div>
 	<div class="search-results" style="display: none;">
-		<h4 class="search-meta">Showing hosts within <span class="user-input" id="chosen-distance"></span> miles of <span class="user-input" id="chosen-zip"></span></h4>
+		<h4 class="search-meta">Showing <span class="user-input" id="found-hosts"></span> hosts within <span class="user-input" id="chosen-distance"></span> miles of <span class="user-input" id="chosen-zip"></span></h4>
 		<div class="results-set"></div>
 	</div>
 	<?php
