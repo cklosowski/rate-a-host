@@ -88,7 +88,7 @@ class RateAHost {
 	public function load_scripts() {
 
 		$prefix = '';
-		if ( ! defined( 'WP_DEBUG' ) || false === WP_DEBUG ) {
+		if ( ! defined( 'SCRIPT_DEBUG' ) || false === SCRIPT_DEBUG ) {
 			$prefix = '.min';
 		}
 
