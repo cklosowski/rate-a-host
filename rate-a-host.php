@@ -87,18 +87,13 @@ class RateAHost {
 
 	public function load_scripts() {
 
-		$prefix = '';
-		if ( ! defined( 'SCRIPT_DEBUG' ) || false === SCRIPT_DEBUG ) {
-			$prefix = '.min';
-		}
-
-		wp_register_style( 'rah-css', RAH_URL . 'assets/style' . $prefix . '.css', NULL, RAH_VERSION, 'all' );
+		wp_register_style( 'rah-css', RAH_URL . 'assets/style.css', NULL, RAH_VERSION, 'all' );
 		wp_enqueue_style( 'rah-css' );
 
-		wp_register_script( 'rah-ajax', RAH_URL . 'assets/rah' . $prefix . '.js', array( 'jquery' ), RAH_VERSION, true );
+		wp_register_script( 'rah-ajax', RAH_URL . 'assets/rah.js', array( 'jquery' ), RAH_VERSION, true );
 		wp_enqueue_script( 'rah-ajax' );
 
-		wp_register_script( 'rah-ratings', RAH_URL . 'assets/star-rating' . $prefix . '.js', array( 'jquery' ), RAH_VERSION );
+		wp_register_script( 'rah-ratings', RAH_URL . 'assets/star-rating.js', array( 'jquery' ), RAH_VERSION );
 		wp_enqueue_script( 'rah-ratings' );
 
 	}
