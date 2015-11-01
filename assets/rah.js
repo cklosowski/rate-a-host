@@ -62,7 +62,7 @@ var mobileView = window.matchMedia( "(max-width: 768px)" );
 		}
 	});
 
-	$('#group_not_listed').on('click', function() {
+	$('body').on('change', '#group_not_listed', function() {
 		$('.rah-form form .alerts').remove();
 		var checked = $(this).prop('checked');
 		if ( checked ) {
