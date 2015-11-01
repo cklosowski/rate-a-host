@@ -80,6 +80,7 @@ function rah_get_secret_groups_ajax() {
 }
 
 function rah_insert_host() {
+
 	if ( isset( $_POST['group_id'] ) && !isset( $_POST['is_secret'] ) ) {
 		$group_id = rah_insert_public_group( $_POST['group_id'] );
 	} elseif ( isset( $_POST['is_secret'] ) ) {
@@ -101,7 +102,13 @@ function rah_insert_host() {
 	$results = $wpdb->get_results( 'SELECT meta_value FROM ' . $wpdb->usermeta . ' WHERE meta_key = "_user_host_id" AND user_id = "' . $current_user->ID . '"');
 
 	if ( count( $results ) > 0 ) {
-		$id =  $results[0]->meta_value;
+		$id       =  $results[0]->meta_value;
+
+		if ( empty( $group_id ) ) {
+			$host     = get_post( $id );
+			$group_id = $host->post_parent;
+		}
+
 		$host = array(
 			'post_status' => 'pending', // Choose: publish, preview, future, etc.
 			'post_type'   => 'hosts', // Set the post type based on the IF is post_type X
