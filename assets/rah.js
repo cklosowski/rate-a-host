@@ -124,7 +124,11 @@ var mobileView = window.matchMedia( "(max-width: 768px)" );
 		if ( formId == 'new_host' ) {
 			var errors = 0;
 			var isSecret = $('#is_secret').prop('checked');
-			var group_id = $('input[name="group_id"]:checked').val();
+			if ( $('input[name="group_id"]').attr('type') == 'hidden') {
+				var group_id = $('input[name="group_id"]').val();
+			} else {
+				var group_id = $('input[name="group_id"]:checked').val();
+			}
 			var month    = $('select[name="host_since_month"]').val();
 			var year     = $('select[name="host_since_year"]').val();
 
