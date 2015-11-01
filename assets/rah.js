@@ -117,14 +117,17 @@ var mobileView = window.matchMedia( "(max-width: 768px)" );
 		}
 	});
 
-	$('.rah-form form #submit').submit( function() {
+	$('.rah-form form').submit( function() {
 		$('.rah-form form .alerts').remove();
 		var formId = $(this).attr( 'id' );
 
 		if ( formId == 'new_host' ) {
 			var errors = 0;
 			var isSecret = $('#is_secret').prop('checked');
-			var group_id = $('input[name=group_id]:checked').val();
+			var group_id = $('input[name="group_id"]:checked').val();
+			var month    = $('select[name="host_since_month"]').val();
+			var year     = $('select[name="host_since_year"]').val();
+
 			if ( isSecret === false && typeof group_id === 'undefined' ) {
 				$('#group_input').before('<p class="alerts error">Group URL is Required if your group is not secret.</p>');
 				errors = errors + 1;
@@ -140,6 +143,11 @@ var mobileView = window.matchMedia( "(max-width: 768px)" );
 						errors = errors + 1;
 					}
 				}
+			}
+
+			if ( month == -1 || year == -1 ) {
+				$('#host_since_month').before('<p class="alerts error">Please add the month and year you became a host.</p>');
+				errors = errors + 1;
 			}
 
 			if ( errors > 0 ) {

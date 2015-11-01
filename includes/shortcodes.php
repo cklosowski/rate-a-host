@@ -54,6 +54,36 @@ function host_registration_form( $atts ) {
 					<span id="city_state"></span>
 				</p>
 
+				<p>
+					<label for="host_since_month"><h4>Hosting Since</h4></label>
+					<br />
+					<select name="host_since_month" id="host_since_month">
+						<option value="-1" readonly="readonly">Select a Month</option>
+						<option value="1">January</option>
+						<option value="2">February</option>
+						<option value="3">March</option>
+						<option value="4">April</option>
+						<option value="5">May</option>
+						<option value="6">June</option>
+						<option value="7">July</option>
+						<option value="8">August</option>
+						<option value="9">September</option>
+						<option value="10">October</option>
+						<option value="11">November</option>
+						<option value="12">December</option>
+					</select>
+					<?php $start_year = 2008; ?>
+					<?php $end_year   = date( 'Y' ); ?>
+					<?php $i = 0; ?>
+					<select name="host_since_year">
+						<option value="-1" readonly="readonly">Select a Year</option>
+						<?php while ( ( $start_year + $i ) <= $end_year ) : ?>
+							<option value="<?php echo $start_year + $i; ?>"><?php echo $start_year + $i; ?></option>
+							<?php $i++; ?>
+						<?php endwhile; ?>
+					</select>
+				</p>
+
 				<p><input type="submit" value="Submit" tabindex="6" id="submit" name="submit" /></p>
 
 
@@ -84,6 +114,7 @@ function host_registration_form( $atts ) {
 		$host_id          = get_host_id_from_user_id( $current_user->ID );
 		$host_status      = get_post_status( $host_id );
 		$host_postal_code = get_post_meta( $host_id, '_user_postal_code', true );
+		$host_since       = get_post_meta( $host_id, '_user_host_since', true );
 
 		switch( $host_status ) {
 			case 'publish':
@@ -172,6 +203,47 @@ function host_registration_form( $atts ) {
 					<input value="<?php echo $host_postal_code; ?>" type="text" maxlength="5" size="5" name="zip_code" id="zip_code" pattern="[\d]{5}" placeholder="12345" />
 					<input type="submit" id="verify_zip_code" value="Check" <?php if ( strlen( $host_postal_code ) < 5 ) : ?>disabled="disabled" <?php endif; ?> /><span class="rah-loading"></span>
 					<span id="city_state"></span>
+				</p>
+
+				<p>
+					<?php
+					$month = -1;
+					$year  = -1;
+					if ( ! empty( $host_since ) ) {
+						$host_since = explode( '/', $host_since );
+						$month      = $host_since[0];
+						$year       = $host_since[1];
+					}
+
+					?>
+					<label for="host_since_month"><h4>Hosting Since</h4></label>
+					<br />
+					<select name="host_since_month" id="host_since_month">
+						<option readonly="readonly" <?php if ( $month == -1 ) { echo 'selected="selected" '; } ?>value="-1">Select a Month</option>
+						<option <?php if ( $month == 1 ) { echo 'selected="selected" '; } ?>value="1">January</option>
+						<option <?php if ( $month == 2 ) { echo 'selected="selected" '; } ?>value="2">February</option>
+						<option <?php if ( $month == 3 ) { echo 'selected="selected" '; } ?>value="3">March</option>
+						<option <?php if ( $month == 4 ) { echo 'selected="selected" '; } ?>value="4">April</option>
+						<option <?php if ( $month == 5 ) { echo 'selected="selected" '; } ?>value="5">May</option>
+						<option <?php if ( $month == 6 ) { echo 'selected="selected" '; } ?>value="6">June</option>
+						<option <?php if ( $month == 7 ) { echo 'selected="selected" '; } ?>value="7">July</option>
+						<option <?php if ( $month == 8 ) { echo 'selected="selected" '; } ?>value="8">August</option>
+						<option <?php if ( $month == 9 ) { echo 'selected="selected" '; } ?>value="9">September</option>
+						<option <?php if ( $month == 10 ) { echo 'selected="selected" '; }?>value="10">October</option>
+						<option <?php if ( $month == 11 ) { echo 'selected="selected" '; } ?>value="11">November</option>
+						<option <?php if ( $month == 12 ) { echo 'selected="selected" '; } ?>value="12">December</option>
+					</select>
+					<?php $start_year = 2008; ?>
+					<?php $end_year   = date( 'Y' ); ?>
+					<?php $i = 0; ?>
+					<select name="host_since_year">
+						<option readonly="readonly" <?php if ( $year == -1 ) { echo 'selected="selected"'; } ?> value="-1">Select a Month</option>
+						<?php while ( ( $start_year + $i ) <= $end_year ) : ?>
+							<?php $current_year = $start_year + $i; ?>
+							<option <?php if ( $year == $current_year ) { echo 'selected="selected"'; } ?> value="<?php echo $current_year ?>"><?php echo $current_year; ?></option>
+							<?php $i++; ?>
+						<?php endwhile; ?>
+					</select>
 				</p>
 
 				<p><input type="submit" value="Submit" tabindex="6" id="submit" name="submit" /></p>

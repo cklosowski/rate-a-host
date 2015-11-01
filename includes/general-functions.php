@@ -158,6 +158,15 @@ function rah_insert_host() {
 		delete_post_meta( $id, '_user_lng' );
 	}
 
+	// Set the hosting since
+	if ( ! empty( $_POST['host_since_year'] ) && ! empty( $_POST['host_since_month'] ) ) {
+		$month = sanitize_text_field( $_POST['host_since_month'] );
+		$year  = sanitize_text_field( $_POST['host_since_year'] );
+
+		$host_since = $month . '/' . $year;
+		update_post_meta( $id, '_user_host_since', $host_since );
+	}
+
 	// Tell the Admins
 	$edit_host = admin_url( 'post.php?post=' . $id . '&action=edit&post_type=host' );
 

@@ -42,7 +42,7 @@ function rah_setup_post_types() {
 		'map_meta_cap'       => true,
 		'has_archive'        => true,
 		'hierarchical'       => false,
-		'supports'           => apply_filters( 'rah_hosts_supports', array( 'title', 'editor', 'thumbnail', 'author', 'revisions', 'custom-fields' ) ),
+		'supports'           => apply_filters( 'rah_hosts_supports', array( 'title', 'thumbnail', 'author', 'revisions', 'custom-fields' ) ),
 	);
 	register_post_type( 'hosts', apply_filters( 'rah_host_post_type_args', $hosts_args  ) );
 
@@ -138,11 +138,9 @@ function rah_delete_host( $post_id ) {
 function rah_register_meta_boxes() {
 	global $post, $ppp_options;
 
-	if ( $post->post_type !== 'reviews' ) {
-		return;
-	}
-
 	add_meta_box( 'rah_review_metabox', 'Rating Information', 'rah_review_metabox_callback', 'reviews', 'normal', 'high' );
+	add_meta_box( 'rah_host_metabox', 'Host Information', 'rah_host_metabox_callback', 'hosts', 'normal', 'high' );
+
 }
 add_action( 'add_meta_boxes', 'rah_register_meta_boxes', 12 );
 
@@ -170,6 +168,23 @@ function rah_review_metabox_callback() {
 		<div class="review-stars"><?php echo rah_generate_stars( $rating ); ?></div>
 		</div><?php
 	}
+}
+
+function rah_host_metabox_callback() {
+	global $post;
+
+	$postal_code = get_post_meta( $post->ID, '_user_postal_code', true );
+	$host_since  = get_post_meta( $post->ID, '_user_host_since', true );
+
+	$user_id     = get_user_id_from_host_id( $post->ID );
+	$host_fb_id  = get_user_meta( $user_id, 'social_connect_facebook_id', true );
+	$fb_user_link  = 'https://facebook.com/' . $host_fb_id;
+?>
+	<p>Postal Code:&nbsp;<?php echo ! empty( $postal_code ) ? $postal_code : 'Not Provided'; ?></p>
+	<p>Host Since:&nbsp;<?php echo ! empty( $host_since ) ? $host_since : 'Not Provided'; ?></p>
+	<p>Host Link:&nbsp;<a href="<?php echo $fb_user_link; ?>" target="_blank">View Host on Facebook</a></p>
+	<p>Group Page:&nbsp;<a href="<?php echo admin_url( 'post.php?action=edit&post=' . $post->post_parent ); ?>">View Group</a></p>
+<?php
 }
 
 function rah_modify_query_order( $query ) {
