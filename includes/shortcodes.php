@@ -95,6 +95,9 @@ function host_registration_form( $atts ) {
 			case 'declined':
 				$status = 'Declined';
 				break;
+			case 'inactive':
+				$status = 'Inactive';
+				break;
 			default:
 				$status = ' - ';
 		}

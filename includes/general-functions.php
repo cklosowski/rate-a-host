@@ -1060,3 +1060,24 @@ function rah_get_coordinates_from_postal_code( $postal_code ) {
 	return $postal_code_results;
 }
 
+function rah_set_host_as_inactive( $new_status, $old_status, $post ) {
+	if ( $post->post_type !== 'hosts' ) {
+		return;
+	}
+
+	// Host set as inactive, disconnect from group
+	if ( $new_status == 'inactive' &&  $old_status !== 'inactive' ) {
+		$id =  $post->ID;
+		$host = array(
+			'ID'          => $id,
+			'post_parent' => 0,
+		);
+		wp_update_post( $host );
+
+		delete_post_meta( $post->ID, '_user_group_id' );
+
+	}
+
+}
+add_action( 'transition_post_status', 'rah_set_host_as_inactive', 10, 3 );
+

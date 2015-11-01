@@ -242,7 +242,16 @@ add_filter( 'dashboard_glance_items', 'rah_glance_items', 10, 1 );
 
 function rah_declined_post_status() {
 	register_post_status( 'declined', array(
-			'label'                     => _x( 'Declined', 'rah-txt' ),
+			'label'                     => _x( 'Declined', 'reviews' ),
+			'public'                    => false,
+			'exclude_from_search'       => true,
+			'show_in_admin_all_list'    => false,
+			'show_in_admin_status_list' => true,
+			'label_count'               => _n_noop( 'Declined <span class="count">(%s)</span>', 'Declined <span class="count">(%s)</span>' ),
+		) );
+
+	register_post_status( 'declined', array(
+			'label'                     => _x( 'Declined', 'hosts' ),
 			'public'                    => false,
 			'exclude_from_search'       => true,
 			'show_in_admin_all_list'    => false,
@@ -252,28 +261,42 @@ function rah_declined_post_status() {
 }
 add_action( 'init', 'rah_declined_post_status' );
 
-function rah_append_post_status_list() {
+
+function rah_inactive_host_status() {
+	register_post_status( 'inactive', array(
+			'label'                     => _x( 'Inactive', 'hosts' ),
+			'public'                    => false,
+			'exclude_from_search'       => true,
+			'show_in_admin_all_list'    => false,
+			'show_in_admin_status_list' => true,
+			'label_count'               => _n_noop( 'Inactive <span class="count">(%s)</span>', 'Inactive <span class="count">(%s)</span>' ),
+		) );
+}
+add_action( 'init', 'rah_inactive_host_status' );
+
+function rah_append_post_status_list_declined() {
 	global $post;
 	if ( $post->post_type !== 'reviews' && $post->post_type !== 'hosts' ) {
 		return;
 	}
 
 	$complete = '';
-	$label = '';
+	$label    = '';
 	if ( $post->post_status === 'declined' ) {
 		$complete = ' selected="selected"';
 		$label = '<span id="post-status-display">Declined</span>';
+		echo '<script>jQuery(document).ready(function($){ $(\'.misc-pub-section label\').append(\'' . $label . '\'); });</script>';
 	}
+
 	echo '
 	<script>
 		jQuery(document).ready(function($){
 			$(\'select#post_status\').append(\'<option value="declined" ' . $complete . '>Declined</option>\');
-			$(\'.misc-pub-section label\').append(\'' . $label . '\');
 		});
 	</script>
 	';
 }
-add_action( 'admin_footer-post.php', 'rah_append_post_status_list' );
+add_action( 'admin_footer-post.php', 'rah_append_post_status_list_declined' );
 
 function rah_add_declined_reason_box() {
 	global $post;
@@ -293,6 +316,31 @@ function rah_add_declined_reason_box() {
 	<?php
 }
 add_action( 'post_submitbox_misc_actions', 'rah_add_declined_reason_box' );
+
+function rah_append_post_status_list_inactive() {
+	global $post;
+
+	if ( $post->post_type !== 'hosts' ) {
+		return;
+	}
+
+	$inactive = '';
+	$label    = '';
+	if ( $post->post_status === 'inactive' ) {
+		$inactive = ' selected="selected"';
+		$label    = '<span id="post-status-display">Inactive</span>';
+		echo '<script>jQuery(document).ready(function($){ $(\'.misc-pub-section label\').append(\'' . $label . '\'); });</script>';
+	}
+
+	echo '
+	<script>
+		jQuery(document).ready(function($){
+			$(\'select#post_status\').append(\'<option value="inactive" ' . $inactive . '>Inactive</option>\');
+		});
+	</script>
+	';
+}
+add_action( 'admin_footer-post.php', 'rah_append_post_status_list_inactive' );
 
 
 function rah_save_meta_boxes( $post_id ) {
