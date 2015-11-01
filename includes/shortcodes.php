@@ -499,27 +499,27 @@ function host_review_submit( $atts ) {
 		get_currentuserinfo();
 
 		// Do some minor form validation to make sure there is content
-		if ( isset( $_POST['title'] ) ) { $title =  $_POST['title']; } else { wp_die( 'Please enter a title' ); }
+		if ( empty( $_POST['title'] ) ) { $title =  $_POST['title']; } else { wp_die( 'Please enter a title' ); }
 
 		$star_ratings = $_POST['star_ratings'];
 		$post_content = isset( $_POST['comments'] ) ? sanitize_text_field( $_POST['comments'] ) : '';
-		$xpost = isset( $_POST['xpost'] ) ? 'yes' : 'no';
-		$reinvoices = isset( $_POST['reinvoices'] ) ? $_POST['reinvoices'] : 'na';
-		$no_issues = isset( $_POST['issues_na'] ) ? $_POST['issues_na'] : false;
+		$xpost        = isset( $_POST['xpost'] ) ? 'yes' : 'no';
+		$reinvoices   = isset( $_POST['reinvoices'] ) ? $_POST['reinvoices'] : 'na';
+		$no_issues    = isset( $_POST['issues_na'] ) ? $_POST['issues_na'] : false;
 
 		// Add the content of the form to $post as an array
 		$review = array(
-			'post_title'	=> sanitize_text_field( $title ),
-			'post_status'	=> 'pending', // Choose: publish, preview, future, etc.
-			'post_type'		=> 'reviews', // Set the post type based on the IF is post_type X
+			'post_title'     => sanitize_text_field( $title ),
+			'post_status'    => 'pending', // Choose: publish, preview, future, etc.
+			'post_type'      => 'reviews', // Set the post type based on the IF is post_type X
 			'post_content'   => $post_content,
 			'comment_status' => 'open',
 			'ping_status'    => 'closed',
-			'post_parent'   => $post->ID
+			'post_parent'    => $post->ID
 		);
 
 		if ( isset( $_POST['existing_post_id'] ) ) {
-			$id = $_POST['existing_post_id'];
+			$id           = $_POST['existing_post_id'];
 			$review['ID'] = $id;
 			wp_update_post( $review );
 		} else {
