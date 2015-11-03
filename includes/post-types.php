@@ -280,8 +280,8 @@ add_action( 'init', 'rah_declined_post_status' );
 function rah_inactive_host_status() {
 	register_post_status( 'inactive', array(
 			'label'                     => _x( 'Inactive', 'hosts' ),
-			'public'                    => false,
-			'exclude_from_search'       => true,
+			'public'                    => true,
+			'exclude_from_search'       => false,
 			'show_in_admin_all_list'    => false,
 			'show_in_admin_status_list' => true,
 			'label_count'               => _n_noop( 'Inactive <span class="count">(%s)</span>', 'Inactive <span class="count">(%s)</span>' ),

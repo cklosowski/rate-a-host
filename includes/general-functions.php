@@ -1097,3 +1097,14 @@ function rah_set_host_as_inactive( $new_status, $old_status, $post ) {
 }
 add_action( 'transition_post_status', 'rah_set_host_as_inactive', 10, 3 );
 
+function rah_append_inactive( $title, $post_id ) {
+	$post = get_post( $post_id );
+	if ( $post->post_type !== 'hosts' ) { return $title; }
+
+	if ( $post->post_status === 'inactive' ) {
+		$title .= ' <span class="inactive"><em>(inactive)</em></span>';
+	}
+
+	return $title;
+}
+add_filter( 'the_title', 'rah_append_inactive', 10, 2 );
