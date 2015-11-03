@@ -499,7 +499,7 @@ function host_review_submit( $atts ) {
 		get_currentuserinfo();
 
 		// Do some minor form validation to make sure there is content
-		if ( empty( $_POST['title'] ) ) { $title =  $_POST['title']; } else { wp_die( 'Please enter a title' ); }
+		if ( ! empty( $_POST['title'] ) ) { $title =  $_POST['title']; } else { wp_die( 'Please enter a title' ); }
 
 		$star_ratings = $_POST['star_ratings'];
 		$post_content = isset( $_POST['comments'] ) ? sanitize_text_field( $_POST['comments'] ) : '';
