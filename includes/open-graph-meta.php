@@ -1,13 +1,13 @@
 <?php
 
 function rah_add_host_og() {
-	global $post;
-
-	if ( $post->post_type !== 'hosts' ) {
+	if ( ! is_single() ) {
 		return;
 	}
 
-	if ( ! is_single() ) {
+	global $post;
+
+	if ( $post->post_type !== 'hosts' ) {
 		return;
 	}
 
@@ -43,11 +43,11 @@ add_action( 'wp_head', 'rah_add_host_og', 2 );
 function rah_add_group_og() {
 	global $post;
 
-	if ( $post->post_type !== 'groups' ) {
+	if ( ! is_single() ) {
 		return;
 	}
 
-	if ( ! is_single() ) {
+	if ( $post->post_type !== 'groups' ) {
 		return;
 	}
 
