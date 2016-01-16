@@ -108,9 +108,9 @@ class RateAHost {
 	}
 
 	public function rewrites() {
-		add_rewrite_endpoint( 'new', EP_PAGES );
-		add_rewrite_endpoint( 'submit', EP_PAGES );
-		add_rewrite_endpoint( 'edit', EP_PAGES );
+		add_rewrite_endpoint( 'new', EP_ALL );
+		add_rewrite_endpoint( 'save', EP_ALL );
+		add_rewrite_endpoint( 'edit', EP_ALL );
 	}
 
 	public function rah_setup_admin_menu() {

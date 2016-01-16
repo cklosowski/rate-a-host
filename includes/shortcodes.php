@@ -2,21 +2,21 @@
 
 function host_registration_form( $atts ) {
 	if ( is_user_logged_in() && ! rah_is_registered_host() ) {
-		global $current_user;
-		get_currentuserinfo();
+		$user_id   = get_current_user_id();
+		$user_info = get_userdata( $user_id );
 		?>
 		<div class="rah-before-form"></div>
 		<div id="postbox" class="rah-form">
 
 			<form id="new_host" name="new_post" method="post" action="<?php echo get_page_link(); ?>">
 				<p>
-					<h4>Hi <?php echo $current_user->user_firstname; ?>,</h4>
+					<h4>Hi <?php echo $user_info->user_firstname; ?>,</h4>
 					Please fill out the following information in order to register yourself as a Co-Op Host. Registering as a host allows
 					you to receive notifications of new reviews.
 				</p>
 
 				<label for="title"><h4>Host Name</h4></label>
-				<p><input size="50" id="title" name="host_title" readonly type="text" value="<?php echo $current_user->user_firstname . ' ' . $current_user->user_lastname; ?>" /></p>
+				<p><input size="50" id="title" name="host_title" readonly type="text" value="<?php echo $user_info->user_firstname . ' ' . $user_info->user_lastname; ?>" /></p>
 				<label for="group_input"><h4>Group Name</h4></label>
 				<p>
 					<label for="is_private">My Group is marked "Secret"</label><input id="is_secret" name="is_secret" type="checkbox" value="is_secret" value="1" />
@@ -108,10 +108,10 @@ function host_registration_form( $atts ) {
 		</p>
 		<?php
 	} elseif ( rah_is_registered_host() ) {
-		global $current_user;
-		get_currentuserinfo();
+		$user_id   = get_current_user_id();
+		$user_info = get_userdata( $user_id );
 
-		$host_id          = get_host_id_from_user_id( $current_user->ID );
+		$host_id          = get_host_id_from_user_id( $user_id );
 		$host_status      = get_post_status( $host_id );
 		$host_postal_code = get_post_meta( $host_id, '_user_postal_code', true );
 		$host_since       = get_post_meta( $host_id, '_user_host_since', true );
@@ -277,17 +277,18 @@ add_shortcode( 'host_registration_form', 'host_registration_form' );
 
 function host_review_form( $atts ) {
 	if ( is_user_logged_in() ) {
-		global $current_user, $post;
-		get_currentuserinfo();
-		$user_host_id = (int)get_host_id_from_user_id( $current_user->ID );
+		$user_id      = get_current_user_id();
+		$user_info    = get_userdata( $user_id );
+		$user_host_id = (int)get_host_id_from_user_id( $user_id );
+
 		if ( $user_host_id === $post->ID ) {
 			?>You can't rate yourself.<?php
-		} else if ( !has_user_reviewed_host( $post->ID ) ) :
+		} else if ( ! has_user_reviewed_host( $post->ID ) ) :
 		?>
 		<div class="rah-before-form"></div>
 		<div id="postbox" class="rah-form">
 
-			<form id="review_host" name="new_post" method="post" action="<?php echo get_permalink( $post->ID); ?>submit">
+			<form id="review_host" name="new_post" method="post" action="<?php echo get_permalink( $post->ID); ?>save">
 				<h3>Reviewing</h3>
 				<p>
 					<input size="50" id="name" name="host_name" readonly type="text" value="<?php the_title(); ?>" />
@@ -376,20 +377,25 @@ function host_review_form( $atts ) {
 add_shortcode( 'host_review_form', 'host_review_form' );
 
 function host_review_edit_form( $atts ) {
-	global $current_user, $post;
-	get_currentuserinfo();
-	$user_host_id = (int)get_host_id_from_user_id( $current_user->ID );
+	global $post;
+
+	$user_id   = get_current_user_id();
+	$user_info = get_userdata( $user_id );
+
+	$user_host_id = (int)get_host_id_from_user_id( $user_id );
+
 	if ( $user_host_id === $post->ID ) {
 		?>You can't rate yourself.<?php
 	} else if ( is_user_logged_in() && has_user_reviewed_host( $post->ID ) ) {
-		global $current_user, $post;
-		get_currentuserinfo();
-		$review_id = has_user_reviewed_host( $post->ID );
-		$post_data = get_post( $review_id );
-		$ratings = get_post_meta( $review_id, '_review_star_ratings', true );
-		$xpost = get_post_meta( $review_id, '_review_xpost', true );
+
+		global $post;
+
+		$review_id  = has_user_reviewed_host( $post->ID );
+		$post_data  = get_post( $review_id );
+		$ratings    = get_post_meta( $review_id, '_review_star_ratings', true );
+		$xpost      = get_post_meta( $review_id, '_review_xpost', true );
 		$reinvoices = get_post_meta( $review_id, '_review_reinvoices', true );
-		$no_issues = get_post_meta( $review_id, '_review_issues_na', true );
+		$no_issues  = get_post_meta( $review_id, '_review_issues_na', true );
 		?>
 		<div class="rah-before-form">
 			<?php if( $post_data->post_status == 'pending' ) : ?>
@@ -401,7 +407,7 @@ function host_review_edit_form( $atts ) {
 		</div>
 		<div id="postbox" class="rah-form">
 
-			<form id="edit_review" name="new_post" method="post" action="<?php echo get_permalink( $post->ID); ?>submit">
+			<form id="edit_review" name="new_post" method="post" action="<?php echo get_permalink( $post->ID); ?>save">
 				<h3>Reviewing</h3>
 				<p>
 					<input size="50" id="name" name="host_name" readonly type="text" value="<?php the_title(); ?>" />
@@ -485,18 +491,20 @@ function host_review_edit_form( $atts ) {
 }
 add_shortcode( 'host_review_edit_form', 'host_review_edit_form' );
 
-function host_review_submit( $atts ) {
+function host_review_save( $atts ) {
+
 	global $post;
 	//$ip_ban = rah_check_rate_limit();
 	$ip_ban = false;
+
 	if ( has_user_reviewed_host( $post->ID ) && ! isset( $_POST['existing_post_id'] ) ) {
 		?>
 		We understand you are excited to give your host feedback, but you've already submitted a review for this host.<br />
 		If you need to make changes, please wait a few minutes and <a href="<?php the_permalink(); ?>edit">edit your review here</a>.
 		<?php
 	} elseif ( is_user_logged_in() && ! $ip_ban ) {
-		global $current_user;
-		get_currentuserinfo();
+		$user_id   = get_current_user_id();
+		$user_info = get_userdata( $user_id );
 
 		// Do some minor form validation to make sure there is content
 		if ( ! empty( $_POST['title'] ) ) { $title =  $_POST['title']; } else { wp_die( 'Please enter a title' ); }
@@ -535,15 +543,15 @@ function host_review_submit( $atts ) {
 		update_post_meta( $id, '_review_reinvoices', $reinvoices );
 		update_post_meta( $id, '_review_issues_na', $no_issues );
 
-		if ( !empty( $current_user->user_email ) ) {
-			$message  = 'Hi ' . $current_user->user_firstname . ',' . "\n";
+		if ( ! empty( $user_info->user_email ) ) {
+			$message  = 'Hi ' . $user_info->user_firstname . ',' . "\n";
 			$message .= 'We\'ve recieved your review for ' . get_the_title( $post->ID ) . '.' . "\n";
 			$message .= 'It will be reviewed soon, and if approved you will be notified via email.';
 			$message .= "\n\n";
 			$message .= 'Thanks,' . "\n";
 			$message .= 'The Host Reviews Board Team';
 
-			wp_mail( $current_user->user_email, 'Host Review Recieved', $message );
+			wp_mail( $user_info->user_email, 'Host Review Recieved', $message );
 		}
 
 		// Tell the Admins
@@ -560,7 +568,7 @@ function host_review_submit( $atts ) {
 		?><h4>Slow down there!</h4><?php
 	}
 }
-add_shortcode( 'host_review_submit', 'host_review_submit' );
+add_shortcode( 'host_review_save', 'host_review_save' );
 
 function host_search_callback() {
 	?>

@@ -12,11 +12,10 @@ function rah_set_social_tokens() {
 }
 
 function rah_get_groups_ajax() {
-	global $current_user;
-	get_currentuserinfo();
+	$user_id = get_current_user_id();
 
-	$access_token = get_user_meta( $current_user->ID, 'fb_access_token', true );
-	$fb_id = get_user_meta( $current_user->ID, 'social_connect_facebook_id', true );
+	$access_token = get_user_meta( $user_id, 'fb_access_token', true );
+	$fb_id        = get_user_meta( $user_id, 'social_connect_facebook_id', true );
 
 	$group_name = urlencode( sanitize_text_field( $_POST['group'] ) );
 
@@ -96,23 +95,20 @@ function rah_insert_host() {
 		}
 	}
 
-	global $current_user, $wpdb;
-	get_currentuserinfo();
+	$user_id = get_current_user_id();
+	$host_id = get_user_meta( $user_id, '_user_host_id', true );
 
-	$results = $wpdb->get_results( 'SELECT meta_value FROM ' . $wpdb->usermeta . ' WHERE meta_key = "_user_host_id" AND user_id = "' . $current_user->ID . '"');
-
-	if ( count( $results ) > 0 ) {
-		$id       =  $results[0]->meta_value;
+	if ( ! empty( $host_id ) ) {
 
 		if ( empty( $group_id ) ) {
-			$host     = get_post( $id );
+			$host     = get_post( $host_id );
 			$group_id = $host->post_parent;
 		}
 
 		$host = array(
 			'post_status' => 'pending', // Choose: publish, preview, future, etc.
 			'post_type'   => 'hosts', // Set the post type based on the IF is post_type X
-			'ID'          => $id,
+			'ID'          => $host_id,
 			'post_parent' => $group_id
 		);
 		wp_update_post( $host );
@@ -134,18 +130,18 @@ function rah_insert_host() {
 		}
 
 
-		$id = wp_insert_post( $host );
-		update_user_meta( $current_user->ID, '_user_host_id', $id );
+		$host_id = wp_insert_post( $host );
+		update_user_meta( $user_id, '_user_host_id', $id );
 
 
 		// Set the Host ID to be related to the user ID
 	}
 
-	wp_set_post_terms( $id, (int)$_POST['cat'], 'type', false);
+	wp_set_post_terms( $host_id, (int)$_POST['cat'], 'type', false);
 
 	if ( isset( $group_id ) && !empty( $group_id ) ) {
 		// Set the Host to be associated with the group
-		update_post_meta( $id, '_user_group_id', $group_id );
+		update_post_meta( $host_id, '_user_group_id', $group_id );
 	}
 
 	// Set the postal info
@@ -156,13 +152,13 @@ function rah_insert_host() {
 		$lat = $postal_data['results'][0]['geometry']['location']['lat'];
 		$lng = $postal_data['results'][0]['geometry']['location']['lng'];
 
-		update_post_meta( $id, '_user_postal_code', $zip_code );
-		update_post_meta( $id, '_user_lat', $lat );
-		update_post_meta( $id, '_user_lng', $lng );
+		update_post_meta( $host_id, '_user_postal_code', $zip_code );
+		update_post_meta( $host_id, '_user_lat', $lat );
+		update_post_meta( $host_id, '_user_lng', $lng );
 	} else {
-		delete_post_meta( $id, '_user_postal_code' );
-		delete_post_meta( $id, '_user_lat' );
-		delete_post_meta( $id, '_user_lng' );
+		delete_post_meta( $host_id, '_user_postal_code' );
+		delete_post_meta( $host_id, '_user_lat' );
+		delete_post_meta( $host_id, '_user_lng' );
 	}
 
 	// Set the hosting since
@@ -171,11 +167,11 @@ function rah_insert_host() {
 		$year  = sanitize_text_field( $_POST['host_since_year'] );
 
 		$host_since = $month . '/' . $year;
-		update_post_meta( $id, '_user_host_since', $host_since );
+		update_post_meta( $host_id, '_user_host_since', $host_since );
 	}
 
 	// Tell the Admins
-	$edit_host = admin_url( 'post.php?post=' . $id . '&action=edit&post_type=host' );
+	$edit_host = admin_url( 'post.php?post=' . $host_id . '&action=edit&post_type=host' );
 
 	$admin_message  = 'A new host has registered for approval on Host Reviews Board' . "\n\n";
 	if ( isset( $group_id ) && !empty( $group_id ) ) {
@@ -199,10 +195,9 @@ function rah_edit_host() {
 	$host_id = isset( $_POST['host_id'] ) ? $_POST['host_id'] : 0;
 	$opt_out = isset( $_POST['host_email_optout'] ) ? 1 : 0;
 
-	global $current_user;
-	get_currentuserinfo();
+	$user_id = get_current_user_id();
 
-	$logged_in_host = get_host_id_from_user_id( $current_user->ID );
+	$logged_in_host = get_host_id_from_user_id( $user_id );
 
 	if ( $logged_in_host != $host_id ) {
 		wp_die( 'Nope, sorry.' );
@@ -220,10 +215,9 @@ function rah_insert_public_group( $group_id ) {
 		return $results[0]->post_id;
 	} else {
 
-		global $current_user;
-		get_currentuserinfo();
+		$user_id = get_current_user_id();
 
-		$access_token = get_user_meta( $current_user->ID, 'fb_access_token', true );
+		$access_token = get_user_meta( $user_id, 'fb_access_token', true );
 		$group_id = trim( $group_id );
 
 		if ( empty( $group_id ) ) {
@@ -256,8 +250,6 @@ function rah_insert_public_group( $group_id ) {
 }
 
 function rah_insert_secret_group( $group_title, $group_description ) {
-	global $current_user;
-	get_currentuserinfo();
 
 	// Add the content of the form to $post as an array
 	$group = array(
@@ -278,16 +270,17 @@ function rah_insert_secret_group( $group_title, $group_description ) {
 }
 
 function rah_is_registered_host() {
-	global $current_user, $wpdb;
-	get_currentuserinfo();
+	$registered_host = false;
+	$user_id         = get_current_user_id();
 
-	$results = $wpdb->get_results( 'SELECT meta_value FROM ' . $wpdb->usermeta . ' WHERE meta_key = "_user_host_id" AND user_id = "' . $current_user->ID . '"');
-
-	if ( count( $results ) > 0 ) {
-		return true;
+	if ( ! empty( $user_id ) ) {
+		$host_id = get_user_meta( $user_id, '_user_host_id', true );
+		if ( ! empty( $host_id ) ) {
+			$registered_host = true;
+		}
 	}
 
-	return false;
+	return $registered_host;
 
 }
 
@@ -303,9 +296,16 @@ function get_host_id_from_user_id( $user_id ) {
 }
 
 function user_is_host( $host_id ) {
-	global $current_user;
-	get_currentuserinfo();
-	$user_host_id = (int)get_user_meta( $current_user->ID, '_user_host_id', true );
+
+	$user_is_host = false;
+
+	$host_id      = absint( $host_id );
+	$user_id      = get_current_user_id();
+
+	$user_host_id = 0;
+	if ( ! empty( $user_id ) ) {
+		$user_host_id = (int) get_user_meta( $user_id, '_user_host_id', true );
+	}
 	return ( $user_host_id === $host_id );
 }
 
@@ -314,10 +314,8 @@ function is_the_host() {
 		return;
 	}
 
-	global $post, $current_user;
-	get_currentuserinfo();
-
-	$host_id = get_host_id_from_user_id( $current_user->ID );
+	$user_id = get_current_user_id();
+	$host_id = get_host_id_from_user_id( $user_id );
 
 	if ( empty( $host_id ) ) {
 		return false;
@@ -359,9 +357,8 @@ function host_has_replied( $post_id ) {
 
 	$post_data = get_post( $post_id );
 
-	global $current_user;
-	get_currentuserinfo();
-	$host_id = get_host_id_from_user_id( $current_user->ID );
+	$user_id = get_current_user_id();
+	$host_id = get_host_id_from_user_id( $user_id );
 
 	if ( empty( $host_id ) ) {
 		return false;

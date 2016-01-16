@@ -120,17 +120,26 @@ class RAH_User_Widget extends WP_Widget {
 			return;
 		}
 
-		global $current_user;
-		get_currentuserinfo();
-		$host_id = get_host_id_from_user_id( $current_user->ID );
+		$user_id   = get_current_user_id();
+		$user_info = get_userdata( $user_id );
 		?>
 		<div class="user-widet-wraper">
-			<div class="user-avatar"><?php echo get_avatar( $current_user->ID, 50 ); ?></div>
-			<strong>Logged In As:</strong> <?php echo $current_user->user_firstname; ?>
+			<div class="user-avatar"><?php echo get_avatar( $user_id, 50 ); ?></div>
+			<strong>Logged In As:</strong> <?php echo $user_info->user_firstname; ?>
 			<ul>
-				<?php if( current_user_can( 'edit_posts' ) ) :?><li><a href="/wp-admin/">Admin Dashboard</a></li><?php endif; ?>
-				<?php if( rah_is_registered_host() ) :?><li><a href="/host-dashboard">Host Dashboard</a></li><?php endif; ?>
-				<?php if( rah_is_registered_host() ) :?><li><a href="<?php echo get_permalink( $host_id ); ?>">View Profile</a></li><?php endif; ?>
+				<?php if( current_user_can( 'edit_posts' ) ) :?>
+					<li><a href="/wp-admin/">Admin Dashboard</a></li>
+				<?php endif; ?>
+
+				<?php if( rah_is_registered_host() ) :?>
+					<li><a href="/host-dashboard">Host Dashboard</a></li>
+				<?php endif; ?>
+
+				<?php if( rah_is_registered_host() ) :?>
+					<?php $host_id   = get_host_id_from_user_id( $user_id ); ?>
+					<li><a href="<?php echo get_permalink( $host_id ); ?>">View Profile</a></li>
+				<?php endif; ?>
+
 				<li><a href="<?php echo wp_logout_url( get_bloginfo( 'url' ) ); ?>">Log Out</a></li>
 			</ul>
 		</div>
