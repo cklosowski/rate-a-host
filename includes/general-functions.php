@@ -1033,7 +1033,7 @@ function rah_search_hosts_distance() {
 
 					<footer class="entry-meta clearfix">
 						<div class="hosts-ratings-wrapper">
-							<?php echo rah_generate_stars( get_post_meta( $post->ID, '_host_rating', true ) ); ?>&nbsp;
+							<?php echo rah_generate_stars( get_post_meta( get_the_ID(), '_host_rating', true ) ); ?>&nbsp;
 							<?php printf( _n( '%d Review', '%d Reviews', $review_count, 'interface' ), $review_count ); ?>
 						</div>
 						<?php echo '<a class="readmore" href="' . get_permalink() . 'new" title="'.the_title( '', '', false ).'">'.__( 'Rate Host', 'interface' ).'</a>'; ?>
