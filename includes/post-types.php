@@ -56,6 +56,16 @@ function rah_setup_post_types() {
 		)
 	);
 
+	register_taxonomy(
+		'buys',
+		'hosts',
+		array(
+			'label'        => __( 'Buys' ),
+			'rewrite'      => array( 'slug' => 'buys' ),
+			'hierarchical' => false,
+		)
+	);
+
 	$reviews_labels =  apply_filters( 'rah_reviews_labels', array(
 			'name'               => 'Reviews',
 			'singular_name'      => 'Review',

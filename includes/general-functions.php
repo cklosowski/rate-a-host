@@ -194,6 +194,8 @@ function rah_edit_host() {
 
 	$host_id = isset( $_POST['host_id'] ) ? $_POST['host_id'] : 0;
 	$opt_out = isset( $_POST['host_email_optout'] ) ? 1 : 0;
+	$buys    = isset( $_POST['host_buys'] ) ? array_map( 'absint', $_POST['host_buys'] ) : array();
+	wp_set_post_terms( $host_id, $buys, 'buys', false );
 
 	$user_id = get_current_user_id();
 
@@ -965,65 +967,78 @@ function rah_search_hosts_distance() {
 			<section id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 				<?php do_action( 'interface_before_post_header' ); ?>
 				<article>
-				<a href="<?php the_permalink(); ?>" title="<?php the_title_attribute();?>">
-					<div class="archive-avatar">
-					<?php echo get_avatar( get_the_author_meta( 'ID' ) ); ?>
-					</div>
-				</a>
-				<header class="entry-header">
-					<?php if (get_the_author() !=''){?>
-					<div class="entry-meta"> <span class="cat-links">
-						<?php the_category(', '); ?>
-						</span><!-- .cat-links -->
-					</div>
-					<?php } ?>
-					<!-- .entry-meta -->
-					<h1 class="entry-title"> <a href="<?php the_permalink(); ?>" title="<?php the_title_attribute();?>">
-						<?php the_title();?> <span class="host-distance"><?php echo $distance; ?></span>
+					<a href="<?php the_permalink(); ?>" title="<?php the_title_attribute();?>">
+						<div class="archive-avatar">
+						<?php echo get_avatar( get_the_author_meta( 'ID' ) ); ?>
+						</div>
+					</a>
+
+					<header class="entry-header">
+
+						<?php if ( get_the_author() !='' ) { ?>
+							<div class="entry-meta">
+								<span class="cat-links"><?php the_category(', '); ?></span>
+							</div>
+						<?php } ?>
+
+						<h1 class="entry-title"> <a href="<?php the_permalink(); ?>" title="<?php the_title_attribute();?>">
+							<?php the_title();?> <span class="host-distance"><?php echo $distance; ?></span>
 						</a> </h1>
-					<!-- .entry-title -->
-					<?php if (get_the_author() !=''){?>
-					<div class="entry-meta clearfix">
-					<?php if ( ! empty( $location_string ) ) : ?>
-						<div class="location"><span class="dashicons dashicons-location-alt"></span><?php echo $location_string; ?></div>
-					<?php endif; ?>
-						<div class="date"><a href="<?php the_permalink(); ?>" title="<?php echo esc_attr( get_the_time() ); ?>">
-						Joined On: <?php the_time( get_option( 'date_format' ) ); ?>
-						</a></div>
-						<?php if ( !empty( $parent ) ) : ?>
-						<div class="group"><?php if( $group_image ) :?><img src="<?php echo $group_image; ?>" /> &nbsp;<?php endif; ?>
-						<a href="<?php echo $group_url; ?>" title-"<?php echo esc_attr( $group_name ); ?>">
-						<?php echo $group_name; ?>
-						</a></div>
-						<?php unset( $parent ); ?>
-					<?php endif; ?>
-						<br />
-					<div class="hosts-ratings-wrapper">
-						<?php echo rah_generate_stars( get_post_meta( get_the_id(), '_host_rating', true ) ); ?><br />
-						<?php printf( _n( '%d Review', '%d Reviews', $review_count, 'interface' ), $review_count ); ?>
-					</div>
-					</div>
-					<!-- .entry-meta -->
+
 					</header>
-					<!-- .entry-header -->
+
+
+
 					<div class="entry-content clearfix">
+						<div class="entry-meta clearfix">
+							<?php if ( ! empty( $location_string ) ) : ?>
+								<div class="location"><span class="dashicons dashicons-location-alt"></span><?php echo $location_string; ?></div>
+							<?php endif; ?>
+
+							<?php if ( ! empty( $host_since ) ) : ?>
+							<?php $host_since = str_replace( '/', '/1/', $host_since ); ?>
+							<div class="date">
+								Host Since: <?php echo date( 'F Y', strtotime( $host_since ) ); ?>
+							</div>
+							<?php endif; ?>
+
+							<div class="date">
+								<a href="<?php the_permalink(); ?>" title="<?php echo esc_attr( get_the_time() ); ?>">
+									Joined On: <?php the_time( get_option( 'date_format' ) ); ?>
+								</a>
+							</div>
+
+							<?php if ( !empty( $parent ) ) : ?>
+								<div class="group"><?php if( $group_image ) :?><img src="<?php echo $group_image; ?>" /> &nbsp;<?php endif; ?>
+									<a href="<?php echo $group_url; ?>" title-"<?php echo esc_attr( $group_name ); ?>">
+										<?php echo $group_name; ?>
+									</a>
+								</div>
+								<?php unset( $parent ); ?>
+							<?php endif; ?>
+
+							<?php $host_buys = wp_get_post_terms( get_the_ID(), 'buys' ); ?>
+							<?php if ( ! empty( $host_buys ) ) : ?>
+							<div class="hosts-buys clearfix">
+								<strong>Runs Buys For</strong>
+								<?php foreach ( $host_buys as $buy ) : ?>
+									<?php $image = RAH_URL . 'assets/images/' . $buy->slug . '-logo.jpg'; ?>
+									<img class="host-buy-logo" src="<?php echo $image; ?>" />
+								<?php endforeach; ?>
+							</div>
+							<?php endif; ?>
+						</div>
 						<?php the_excerpt(); ?>
 					</div>
-					<!-- .entry-content -->
-					<footer class="entry-meta clearfix"> <span class="tag-links">
-					<?php $tag_list = get_the_tag_list( '', __( ' ', 'interface' ) );
-							if(!empty($tag_list)){
-								echo $tag_list;
-							}?>
-					</span><!-- .tag-links -->
-					<?php
-						echo '<a class="readmore" href="' . get_permalink() . 'new" title="'.the_title( '', '', false ).'">'.__( 'Rate Host', 'interface' ).'</a>';
-					?>
+
+					<footer class="entry-meta clearfix">
+						<div class="hosts-ratings-wrapper">
+							<?php echo rah_generate_stars( get_post_meta( $post->ID, '_host_rating', true ) ); ?>&nbsp;
+							<?php printf( _n( '%d Review', '%d Reviews', $review_count, 'interface' ), $review_count ); ?>
+						</div>
+						<?php echo '<a class="readmore" href="' . get_permalink() . 'new" title="'.the_title( '', '', false ).'">'.__( 'Rate Host', 'interface' ).'</a>'; ?>
 					</footer>
-					<!-- .entry-meta -->
-				<?php } else { ?>
-				</header>
-				<?php } ?>
+
 				</article>
 			</section>
 

@@ -93,6 +93,17 @@ class RAH_Host_Widget extends WP_Widget {
 						<?php printf( _n( '%d Review', '%d Reviews', $review_count, 'interface' ), $review_count ); ?>
 					</div>
 
+					<?php $host_buys = wp_get_post_terms( $post->ID, 'buys' ); ?>
+					<?php if ( ! empty( $host_buys ) ) : ?>
+					<div class="widget-buys">
+						<p><strong>Runs Buys For</strong></p>
+						<?php foreach ( $host_buys as $buy ) : ?>
+							<?php $image = RAH_URL . 'assets/images/' . $buy->slug . '-logo.jpg'; ?>
+							<img class="host-buy-logo" src="<?php echo $image; ?>" />
+						<?php endforeach; ?>
+					</div>
+					<?php endif; ?>
+
 					<?php if ( !user_is_host( $post->ID ) ) :?>
 						<div class="widget-review-button">
 							<?php if ( is_user_logged_in() && has_user_reviewed_host( $post->ID ) ) : ?>

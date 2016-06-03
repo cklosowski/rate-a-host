@@ -46,6 +46,10 @@ input[type="submit"]:disabled:hover {
 	margin-left: 25px;
 }
 
+.host-buy-type {
+	display: block;
+}
+
 #zip_code, #verify_zip_code {
 	width: auto !important;
 	display: inline-block;

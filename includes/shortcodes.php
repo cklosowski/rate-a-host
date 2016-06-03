@@ -256,12 +256,24 @@ function host_registration_form( $atts ) {
 		</div>
 		<hr />
 		<div>
-			<h5>Host Settings</h5>
+			<h3>Host Settings</h3>
 			<form id="host-settings" method="post" action="<?php echo get_page_link(); ?>">
 				<p id="host-settings">
-				<?php $no_emails = get_post_meta( $host_id, '_no_review_optout', true ); ?>
-				<input type="checkbox" id="host_email_optout" name="host_email_optout" value="1" <?php checked( '1', $no_emails, true ); ?> />
-				&nbsp;<label for="host_email_optout"><strong>Do not</strong> send me emails when I get new reviews</label>
+					<h4>Email Settings</h4>
+					<?php $no_emails = get_post_meta( $host_id, '_no_review_optout', true ); ?>
+					<input type="checkbox" id="host_email_optout" name="host_email_optout" value="1" <?php checked( '1', $no_emails, true ); ?> />
+					&nbsp;<label for="host_email_optout"><strong>Do not</strong> send me emails when I get new reviews</label>
+				</p>
+
+				<p class="host-buys">
+					<h4>I run the following buys</h4>
+					<?php $host_buys = wp_get_post_terms( $host_id, 'buys', array( 'fields' => 'ids' ) ); ?>
+					<?php $buys = get_terms( 'buys', array( 'hide_empty' => false ) ); ?>
+					<?php foreach ( $buys as $buy ) : ?>
+					<span class="host-buy-type">
+						<input <?php checked( true, in_array( $buy->term_id, $host_buys ), true ); ?> type="checkbox" name="host_buys[]" value="<?php echo $buy->term_id; ?>" id="buy-<?php echo $buy->term_id; ?>" value="<?php echo $buy->term_id; ?>" /><label for="buy-<?php echo $buy->term_id; ?>"><?php echo $buy->name; ?></label>
+					</span>
+					<?php endforeach; ?>
 				</p>
 				<input type="hidden" name="rah-action" value="edit-host" />
 				<input type="hidden" name="host_id" value="<?php echo $host_id; ?>" />
@@ -276,6 +288,8 @@ function host_registration_form( $atts ) {
 add_shortcode( 'host_registration_form', 'host_registration_form' );
 
 function host_review_form( $atts ) {
+	global $post;
+
 	if ( is_user_logged_in() ) {
 		$user_id      = get_current_user_id();
 		$user_info    = get_userdata( $user_id );
