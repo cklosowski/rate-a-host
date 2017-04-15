@@ -1,4 +1,10 @@
 <?php
+function rah_get_facebook_user_id( $user_id ) {
+	$sql = "SELECT identifier FROM `{$wpdb->prefix}wslusersprofiles` where user_id = %d and provider = 'Facebook'";
+	$rs  = $wpdb->get_var( $wpdb->prepare( $sql, $user_id ) );
+
+	return $rs;
+}
 
 function rah_no_login_php() {
 	if ( !isset( $_GET['ck_rah_override'] ) ) {
@@ -15,7 +21,7 @@ function rah_get_groups_ajax() {
 	$user_id = get_current_user_id();
 
 	$access_token = get_user_meta( $user_id, 'fb_access_token', true );
-	$fb_id        = get_user_meta( $user_id, 'social_connect_facebook_id', true );
+	$fb_id        = rah_get_facebook_user_id( $user_id );
 
 	$group_name = urlencode( sanitize_text_field( $_POST['group'] ) );
 
@@ -664,7 +670,7 @@ add_filter( 'manage_reviews_posts_columns', 'rah_add_user_id_column' );
 add_filter( 'manage_hosts_posts_columns', 'rah_add_user_id_column' );
 
 function rah_show_user_id_column_content( $value, $column_name, $user_id ) {
-	$fb_id = get_user_meta( $user_id, 'social_connect_facebook_id', true );
+	$fb_id = rah_get_facebook_user_id( $user_id );
 	$fb_link = 'https://facebook.com/' . $fb_id;
 
 	if ( 'fb_link' == $column_name ) {
@@ -690,7 +696,7 @@ function custom_columns( $column, $post_id ) {
 		case 'reviews':
 			$type = 'Review Author';
 			$post_data = get_post( $post_id );
-			$fb_id = get_user_meta( $post_data->post_author, 'social_connect_facebook_id', true );
+			$fb_id = rah_get_facebook_user_id( $user_id );
 			break;
 		case 'groups':
 			$type = 'Group';
@@ -699,7 +705,7 @@ function custom_columns( $column, $post_id ) {
 		case 'hosts':
 			$type = 'Host';
 			$user_id = get_user_id_from_host_id( $post_id );
-			$fb_id = get_user_meta( $user_id, 'social_connect_facebook_id', true );
+			$fb_id   = rah_get_facebook_user_id( $user_id );
 			break;
 
 	}

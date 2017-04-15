@@ -187,7 +187,7 @@ function rah_host_metabox_callback() {
 	$host_since  = get_post_meta( $post->ID, '_user_host_since', true );
 
 	$user_id     = get_user_id_from_host_id( $post->ID );
-	$host_fb_id  = get_user_meta( $user_id, 'social_connect_facebook_id', true );
+	$host_fb_id  = rah_get_facebook_user_id( $user_id );
 	$fb_user_link  = 'https://facebook.com/' . $host_fb_id;
 ?>
 	<p>Postal Code:&nbsp;<?php echo ! empty( $postal_code ) ? $postal_code : 'Not Provided'; ?></p>

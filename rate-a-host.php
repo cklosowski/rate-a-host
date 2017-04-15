@@ -43,6 +43,10 @@ class RateAHost {
 		include_once( $includes_path . 'shortcodes.php' );
 		include_once( $includes_path . 'widgets.php' );
 		include_once( $includes_path . 'open-graph-meta.php' );
+
+		if ( is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+			include_once( $includes_path . 'wp-cli-integrations.php' );
+		}
 	}
 
 	private function hooks() {
