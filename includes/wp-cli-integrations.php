@@ -42,7 +42,6 @@ class HRB_CLI_Tools extends WP_CLI_Command {
 				$profile = new stdClass;
 				$profile->identifier = $fb_id;
 				wsl_store_hybridauth_user_profile( $user->ID, 'Facebook', $profile );
-
 				$progress->tick();
 
 			}
@@ -74,6 +73,9 @@ class HRB_CLI_Tools extends WP_CLI_Command {
 				$image_url = 'https://graph.facebook.com/' . $fb_id . '/picture?width=150&height=150';
 				$sql       = "UPDATE `{$wpdb->prefix}wslusersprofiles` WHERE user_id = %d SET photourl = %s";
 				$wpdb->query( $wpdb->prepare( $sql, $user->ID, $image_url ) );
+
+				update_user_meta( $user->ID, 'wsl_current_provider', 'Facebook' );
+				update_user_meta( $user->ID, 'wsl_current_user_image', $image_url );
 
 				$progress->tick();
 
