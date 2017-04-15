@@ -87,6 +87,8 @@ class RateAHost {
 
 	public function load_scripts() {
 
+		wp_enqueue_style( 'dashicons' );		
+
 		wp_register_style( 'rah-css', RAH_URL . 'assets/style.css', NULL, RAH_VERSION, 'all' );
 		wp_enqueue_style( 'rah-css' );
 
