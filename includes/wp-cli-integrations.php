@@ -26,8 +26,8 @@ class HRB_CLI_Tools extends WP_CLI_Command {
 
 		// Import the users.
 		$progress = new \cli\progress\Bar( 'Migrating Users', count( $users ) );
-		if ( ! empty( $data['users'] ) ) {
-			foreach ( $data['users'] as $user ) {
+		if ( ! empty( $users ) ) {
+			foreach ( $users as $user ) {
 
 				$fb_id  = get_user_meta( $user->ID, 'social_connect_facebook_id', true );
 				if ( empty( $fb_id ) ) {
