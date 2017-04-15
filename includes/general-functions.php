@@ -1,5 +1,6 @@
 <?php
 function rah_get_facebook_user_id( $user_id ) {
+	global $wpdb;
 	$sql = "SELECT identifier FROM `{$wpdb->prefix}wslusersprofiles` where user_id = %d and provider = 'Facebook'";
 	$rs  = $wpdb->get_var( $wpdb->prepare( $sql, $user_id ) );
 
