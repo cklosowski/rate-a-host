@@ -51,4 +51,36 @@ class HRB_CLI_Tools extends WP_CLI_Command {
 
 		}
 	}
+
+	public function generate_avatars( $args, $assoc_args ) {
+		global $wpdb;
+
+		$args = array(
+			'number' => '-1',
+			'fields' => 'all',
+		);
+		$users = get_users( $args );
+
+		// Import the users.
+		$progress = new \cli\progress\Bar( 'Migrating Users', count( $users ) );
+		if ( ! empty( $users ) ) {
+			foreach ( $users as $user ) {
+
+				$fb_id = rah_get_facebook_user_id( $user->ID );
+				if ( empty( $fb_id ) ) {
+					continue;
+				}
+
+				$image_url = 'https://graph.facebook.com/' . $fb_id . '/picture?width=150&height=150';
+				$sql       = "UPDATE `{$wpdb->prefix}wslusersprofiles` WHERE user_id = %d SET photourl = %s";
+				$wpdb->query( $wpdb->prepare( $sql, $user->ID, $image_url ) );
+
+				$progress->tick();
+
+			}
+
+			$progress->finish();
+
+		}
+	}
 }
