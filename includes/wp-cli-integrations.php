@@ -2,6 +2,7 @@
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
 WP_CLI::add_command( 'hrb', 'HRB_CLI_Tools' );
 
 /**
@@ -71,8 +72,8 @@ class HRB_CLI_Tools extends WP_CLI_Command {
 				}
 
 				$image_url = 'https://graph.facebook.com/' . $fb_id . '/picture?width=150&height=150';
-				$sql       = "UPDATE `{$wpdb->prefix}wslusersprofiles` WHERE user_id = %d SET photourl = %s";
-				$wpdb->query( $wpdb->prepare( $sql, $user->ID, $image_url ) );
+				$sql       = "UPDATE `{$wpdb->prefix}wslusersprofiles` SET photourl = %s WHERE user_id = %d";
+				$wpdb->query( $wpdb->prepare( $sql, $image_url, $user->ID ) );
 
 				update_user_meta( $user->ID, 'wsl_current_provider', 'Facebook' );
 				update_user_meta( $user->ID, 'wsl_current_user_image', $image_url );
@@ -85,4 +86,5 @@ class HRB_CLI_Tools extends WP_CLI_Command {
 
 		}
 	}
+}
 }
